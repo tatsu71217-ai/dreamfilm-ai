@@ -20,8 +20,8 @@ export interface VideoProviderSettings {
 }
 
 export const DEFAULT_VIDEO_PROVIDER_SETTINGS: VideoProviderSettings = {
-  // 無料枠があり、かつバックエンド無しでブラウザから直接呼べる Pollinations を既定にする
-  selectedProvider: "pollinations",
+  // 外部APIも課金も不要なブラウザ内生成を既定にする
+  selectedProvider: "local",
   pollinationsApiKey: "",
   pollinationsModel: DEFAULT_POLLINATIONS_VIDEO_MODEL,
   googleVeoApiKey: "",
@@ -32,8 +32,8 @@ export const DEFAULT_VIDEO_PROVIDER_SETTINGS: VideoProviderSettings = {
  * Mockは開発ビルドでのみ選択肢に出す。
  */
 export const SELECTABLE_VIDEO_PROVIDERS: VideoProviderId[] = isMockProviderAvailable
-  ? ["pollinations", "veo", "mock"]
-  : ["pollinations", "veo"];
+  ? ["local", "pollinations", "veo", "mock"]
+  : ["local", "pollinations", "veo"];
 
 /** LocalStorage 保存キー */
 export const VIDEO_PROVIDER_SETTINGS_STORAGE_KEY = "dreamfilm-ai:video-provider-settings";

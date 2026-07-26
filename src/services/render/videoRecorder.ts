@@ -34,6 +34,7 @@ export async function renderScenesToVideo(
   width: number,
   height: number,
   fps: number,
+  onProgress?: (elapsedSeconds: number, totalSeconds: number) => void,
 ): Promise<Blob> {
   const canvas = document.createElement("canvas");
   canvas.width = width;
@@ -70,6 +71,7 @@ export async function renderScenesToVideo(
         scenes.find((s) => elapsedSeconds >= s.startTime && elapsedSeconds < s.endTime) ??
         scenes[scenes.length - 1];
       drawScene(ctx, scene, width, height, elapsedSeconds - scene.startTime);
+      onProgress?.(elapsedSeconds, totalSeconds);
       setTimeout(tick, frameIntervalMs);
     };
     tick();

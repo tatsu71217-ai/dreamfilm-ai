@@ -17,6 +17,7 @@ export const RENDER_STATUS_LABEL: Record<RenderStatus, string> = {
  * "mock" は本番では選択できないが、過去に作成された履歴の表示に必要なため残している。
  */
 export const VIDEO_PROVIDER_LABEL: Record<VideoProviderId, string> = {
+  local: "ブラウザ内生成（無料）",
   pollinations: "Pollinations",
   veo: "Google Veo",
   mock: "Mock Provider（開発用）",

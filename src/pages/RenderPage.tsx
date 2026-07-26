@@ -37,6 +37,9 @@ function deriveConnectionStatusLabel(job: RenderJob): string {
   if (job.provider === "mock") {
     return "モック（外部API接続なし）";
   }
+  if (job.provider === "local") {
+    return job.status === "failed" ? "生成エラー" : "ブラウザ内生成（外部通信なし）";
+  }
 
   switch (job.status) {
     case "waiting":

@@ -2,16 +2,27 @@ import * as React from "react";
 import { renderJobRepository } from "@/data/renderJobRepository";
 import { videoBlobStore } from "@/data/videoBlobStore";
 import { renderService } from "@/services/render";
+import type { LocalRenderInput } from "@/services/video/types";
 import type { Dream } from "@/types/dream";
 import type { DreamMoviePackage } from "@/types/movie";
 import type { RenderJob } from "@/types/render";
+
+/** ローカル生成（LocalCanvasVideoProvider）選択時にのみ使用するスタイル・尺の指定 */
+export interface LocalRenderOptions {
+  styleId: LocalRenderInput["styleId"];
+  durationSeconds: LocalRenderInput["durationSeconds"];
+}
 
 interface RenderJobsContextValue {
   jobs: RenderJob[];
   /** 初回データ取得中かどうか */
   isLoading: boolean;
   /** レンダリングジョブを開始する。作成直後のジョブ（status: waiting）を返す */
-  startRender: (dream: Dream, moviePackage: DreamMoviePackage) => Promise<RenderJob>;
+  startRender: (
+    dream: Dream,
+    moviePackage: DreamMoviePackage,
+    localOptions?: LocalRenderOptions,
+  ) => Promise<RenderJob>;
   /** 実行中のジョブをキャンセルする。更新後のジョブを返す */
   cancelRender: (jobId: string) => Promise<RenderJob>;
   /** Render履歴からジョブを削除する */
@@ -58,11 +69,12 @@ export function RenderJobsProvider({ children }: { children: React.ReactNode }) 
   }, []);
 
   const startRender = React.useCallback(
-    async (dream: Dream, moviePackage: DreamMoviePackage) => {
+    async (dream: Dream, moviePackage: DreamMoviePackage, localOptions?: LocalRenderOptions) => {
       const job = await renderService.startRender({
         dream,
         moviePackage,
         onUpdate: upsertJob,
+        localOptions,
       });
       upsertJob(job);
       return job;

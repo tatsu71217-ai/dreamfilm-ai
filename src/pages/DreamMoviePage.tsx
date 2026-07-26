@@ -7,6 +7,12 @@ import { Button } from "@/components/ui/button";
 import { useDreams } from "@/hooks/useDreams";
 import { useMovieGenerator } from "@/hooks/useMovieGenerator";
 import { useRenderJobs } from "@/hooks/useRenderJobs";
+import { DEFAULT_STYLE_ID, STYLE_PRESETS, type StyleId } from "@/types/style";
+import {
+  DEFAULT_VIDEO_DURATION,
+  VIDEO_DURATION_OPTIONS,
+  type VideoDurationSeconds,
+} from "@/types/videoProject";
 import { generateId } from "@/utils/id";
 
 export function DreamMoviePage() {
@@ -20,6 +26,10 @@ export function DreamMoviePage() {
   const [saveError, setSaveError] = React.useState<string | null>(null);
   const [isStartingRender, setIsStartingRender] = React.useState(false);
   const [renderError, setRenderError] = React.useState<string | null>(null);
+  const [durationSeconds, setDurationSeconds] = React.useState<VideoDurationSeconds>(
+    DEFAULT_VIDEO_DURATION,
+  );
+  const [styleId, setStyleId] = React.useState<StyleId>(DEFAULT_STYLE_ID);
 
   const dream = dreamId ? getDreamById(dreamId) : undefined;
 
@@ -56,7 +66,7 @@ export function DreamMoviePage() {
     setIsStartingRender(true);
     setRenderError(null);
     try {
-      const job = await startRender(dream, dream.moviePackage);
+      const job = await startRender(dream, dream.moviePackage, { styleId, durationSeconds });
       navigate(`/render/${job.id}`);
     } catch (error) {
       setRenderError(
@@ -191,11 +201,70 @@ export function DreamMoviePage() {
 
         {/* 「動画を生成」はMovie Packageが保存済みの場合にのみ表示する (WORK_ORDER Sprint6) */}
         {dream.moviePackage ? (
-          <div className="flex flex-col gap-2 rounded-xl border border-gold/30 bg-gold/5 p-4">
+          <div className="flex flex-col gap-3 rounded-xl border border-gold/30 bg-gold/5 p-4">
             <p className="text-sm text-muted-foreground">
               保存済みのMovie Packageから、実際のショートムービーを生成します。
-              生成には数分かかることがあります。動画生成プロバイダーとAPIキーは設定画面で変更できます。
+              動画生成プロバイダーとAPIキーは設定画面で変更できます。
             </p>
+
+            <div className="flex flex-col gap-2">
+              <span className="text-xs font-medium text-muted-foreground">動画の長さ</span>
+              <div
+                className="flex gap-2"
+                role="radiogroup"
+                aria-label="動画の長さを選択"
+              >
+                {VIDEO_DURATION_OPTIONS.map((option) => {
+                  const isActive = option === durationSeconds;
+                  return (
+                    <button
+                      key={option}
+                      type="button"
+                      role="radio"
+                      aria-checked={isActive}
+                      onClick={() => setDurationSeconds(option)}
+                      className={
+                        isActive
+                          ? "flex-1 rounded-lg border border-gold bg-gold/15 px-3 py-2 text-sm text-gold"
+                          : "flex-1 rounded-lg border border-border bg-secondary/40 px-3 py-2 text-sm text-muted-foreground hover:text-foreground"
+                      }
+                    >
+                      {option}秒
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <span className="text-xs font-medium text-muted-foreground">映像スタイル</span>
+              <div
+                className="flex flex-wrap gap-2"
+                role="radiogroup"
+                aria-label="映像スタイルを選択"
+              >
+                {Object.values(STYLE_PRESETS).map((preset) => {
+                  const isActive = preset.id === styleId;
+                  return (
+                    <button
+                      key={preset.id}
+                      type="button"
+                      role="radio"
+                      aria-checked={isActive}
+                      onClick={() => setStyleId(preset.id)}
+                      className={
+                        isActive
+                          ? "rounded-full border border-gold bg-gold/15 px-3 py-1.5 text-xs text-gold"
+                          : "rounded-full border border-border bg-secondary/40 px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground"
+                      }
+                    >
+                      {preset.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             {renderError ? (
               <p role="alert" className="text-sm text-destructive">
                 {renderError}

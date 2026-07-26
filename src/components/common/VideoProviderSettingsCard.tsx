@@ -127,6 +127,13 @@ export function VideoProviderSettingsCard() {
         />
       ) : null}
 
+      {selectedProvider === "local" ? (
+        <p className="rounded-lg border border-gold/30 bg-gold/5 px-3 py-2 text-xs text-muted-foreground">
+          端末（ブラウザ）内だけで動画を生成します。APIキーは不要で、通信費・利用料も発生しません。
+          「映画化する」画面で尺とスタイルを選んで生成できます。
+        </p>
+      ) : null}
+
       {selectedProvider === "veo" ? (
         <VeoSettings apiKey={googleVeoApiKey} onApiKeyChange={setGoogleVeoApiKey} />
       ) : null}

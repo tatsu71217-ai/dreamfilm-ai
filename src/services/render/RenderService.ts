@@ -2,6 +2,7 @@ import type { RenderJobRepository } from "@/data/renderJobRepository";
 import type { VideoProviderSettingsRepository } from "@/data/videoProviderSettingsRepository";
 import type { VideoProvider } from "@/services/video/VideoProvider";
 import type { VideoProviderFactory } from "@/services/video/VideoProviderFactory";
+import type { LocalRenderInput } from "@/services/video/types";
 import type { Dream } from "@/types/dream";
 import type { DreamMoviePackage } from "@/types/movie";
 import type { RenderJob } from "@/types/render";
@@ -17,6 +18,8 @@ interface StartRenderParams {
   moviePackage: DreamMoviePackage;
   /** ジョブの状態が更新されるたびに呼び出されるコールバック（UIへのpush用） */
   onUpdate?: (job: RenderJob) => void;
+  /** ローカル生成（LocalCanvasVideoProvider）選択時にのみ使用するスタイル・尺の指定 */
+  localOptions?: { styleId: LocalRenderInput["styleId"]; durationSeconds: LocalRenderInput["durationSeconds"] };
 }
 
 interface ActivePoll {
@@ -49,7 +52,12 @@ class DefaultRenderService implements RenderService {
     private readonly videoProviderSettingsRepository: VideoProviderSettingsRepository,
   ) {}
 
-  async startRender({ dream, moviePackage, onUpdate }: StartRenderParams): Promise<RenderJob> {
+  async startRender({
+    dream,
+    moviePackage,
+    onUpdate,
+    localOptions,
+  }: StartRenderParams): Promise<RenderJob> {
     const settings = await this.videoProviderSettingsRepository.get();
     const provider = this.videoProviderFactory.create(settings.selectedProvider, {
       googleVeoApiKey: settings.googleVeoApiKey,
@@ -71,7 +79,18 @@ class DefaultRenderService implements RenderService {
     onUpdate?.(job);
 
     try {
-      await provider.render(job.id, { moviePackage });
+      await provider.render(job.id, {
+        moviePackage,
+        local: localOptions
+          ? {
+              title: dream.title,
+              body: dream.body,
+              mood: dream.mood,
+              styleId: localOptions.styleId,
+              durationSeconds: localOptions.durationSeconds,
+            }
+          : undefined,
+      });
       this.pollStatus(provider, job.id, onUpdate);
     } catch (error) {
       // APIキー未設定・通信失敗・Timeout等、開始時点で判明したエラーは即座に失敗として保存する

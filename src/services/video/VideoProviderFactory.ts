@@ -1,4 +1,5 @@
 import { GoogleVeoProvider } from "@/services/video/GoogleVeoProvider";
+import { LocalCanvasVideoProvider } from "@/services/video/LocalCanvasVideoProvider";
 import { MockVideoProvider } from "@/services/video/MockVideoProvider";
 import { PollinationsVideoProvider } from "@/services/video/PollinationsVideoProvider";
 import type { VideoProvider } from "@/services/video/VideoProvider";
@@ -38,6 +39,8 @@ export interface VideoProviderFactory {
 class DefaultVideoProviderFactory implements VideoProviderFactory {
   create(providerId: VideoProviderId, config: VideoProviderFactoryConfig): VideoProvider {
     switch (providerId) {
+      case "local":
+        return new LocalCanvasVideoProvider();
       case "pollinations":
         return new PollinationsVideoProvider({
           apiKey: config.pollinationsApiKey ?? "",

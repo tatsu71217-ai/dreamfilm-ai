@@ -1,9 +1,13 @@
 import type { DreamMoviePackageResult } from "@/services/ai/types";
+import type { Mood } from "@/types/dream";
+import type { StyleId } from "@/types/style";
+import type { VideoDurationSeconds } from "@/types/videoProject";
 
 /**
  * 動画生成プロバイダーの識別子。
  *
- * - `pollinations`: Pollinations.ai 経由の実動画生成（既定。無料アカウントの日次付与枠で利用可能）
+ * - `local`: ブラウザ内でCanvas+MediaRecorderにより生成する（既定。無料・外部API不要）
+ * - `pollinations`: Pollinations.ai 経由の実動画生成（無料アカウントの日次付与枠で利用可能）
  * - `veo`: Google Veo (Gemini API) 経由の実動画生成（無料枠なし・従量課金）
  * - `mock`: 開発用のダミー実装。本番ビルドでは選択できない（VideoProviderFactory参照）。
  *   過去に作成されたRenderJobが `provider: "mock"` を保持している場合があるため、
@@ -12,7 +16,7 @@ import type { DreamMoviePackageResult } from "@/services/ai/types";
  * Sprint6時点で型だけ定義されていた runway/kling/pika/luma は、実装される見込みがなく
  * Factoryでも一律エラーになるだけの死んだ分岐だったため削除した。
  */
-export type VideoProviderId = "pollinations" | "veo" | "mock";
+export type VideoProviderId = "local" | "pollinations" | "veo" | "mock";
 
 /**
  * レンダリングジョブの状態。
@@ -28,9 +32,20 @@ export type RenderStatus =
   | "failed"
   | "cancelled";
 
+/** ローカル生成(LocalCanvasVideoProvider)専用の入力。他のProviderは無視する */
+export interface LocalRenderInput {
+  title: string;
+  body: string;
+  mood: Mood;
+  styleId: StyleId;
+  durationSeconds: VideoDurationSeconds;
+}
+
 /** VideoProvider.render() に渡す入力 */
 export interface VideoRenderInput {
   moviePackage: DreamMoviePackageResult;
+  /** ローカル生成でのみ使用する追加情報 */
+  local?: LocalRenderInput;
 }
 
 /** VideoProvider.getStatus() が返す、ある時点でのジョブの状態スナップショット */
