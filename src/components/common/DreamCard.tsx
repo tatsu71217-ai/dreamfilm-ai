@@ -11,10 +11,6 @@ interface DreamCardProps {
 
 const EXCERPT_MAX_LENGTH = 48;
 
-/**
- * Home画面の夢一覧カード。
- * WORK_ORDER (Sprint2) の表示項目要件: タイトル / 日付 / 気分 / 本文冒頭。
- */
 export function DreamCard({ dream }: DreamCardProps) {
   return (
     <Link

@@ -28,8 +28,7 @@ export const isMockProviderAvailable = import.meta.env.DEV;
 /**
  * Provider名から対応する `VideoProvider` の実装を生成するFactory。
  *
- * WORK_ORDER (Sprint7) の「UIからProviderを直接生成しないこと」という要件に対応する。
- * UIやhooksは本Factoryを直接使わず、必ず services/render/RenderService.ts 経由で
+ * UIやhooksから直接生成させないため、必ず services/render/RenderService.ts 経由で
  * 動画生成プロバイダーを利用する。
  */
 export interface VideoProviderFactory {

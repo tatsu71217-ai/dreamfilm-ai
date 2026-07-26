@@ -3,8 +3,7 @@ import { generateId } from "@/utils/id";
 
 /**
  * 一意なID文字列を生成する。
- * Sprint6より、アプリ全体で共通の utils/id.ts の実装を利用する形にリファクタリングした
- * （Movie Package/RenderJob等、他のモデルでも同じID生成ロジックが必要になったため）。
+ * Movie Package/RenderJob等、他のモデルとも共通の utils/id.ts の実装を利用する。
  */
 export function generateDreamId(): string {
   return generateId();
@@ -13,7 +12,7 @@ export function generateDreamId(): string {
 /**
  * ダミーの Dream Score を生成する。
  *
- * TODO(将来Sprint): 実際のAI分析エンジンによるスコアリングに置き換える。
+ * TODO: 実際のAI分析エンジンによるスコアリングに置き換える。
  * 現時点では「記録した直後でもDetail画面が意味のある見た目になる」ことを目的とした
  * 疑似乱数によるダミー実装。
  */
@@ -40,10 +39,7 @@ export type DreamFormErrors = Partial<Record<keyof DreamFormValues, string>>;
 const TITLE_MAX_LENGTH = 40;
 const BODY_MAX_LENGTH = 2000;
 
-/**
- * Dream Record画面の入力チェック。
- * WORK_ORDER (Sprint2) の「入力チェック」要件に対応する共通バリデーション関数。
- */
+/** Dream Record画面の入力チェック用の共通バリデーション関数。 */
 export function validateDreamForm(values: DreamFormValues): DreamFormErrors {
   const errors: DreamFormErrors = {};
 

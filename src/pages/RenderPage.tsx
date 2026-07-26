@@ -30,8 +30,8 @@ const IN_PROGRESS_STATUSES = new Set(["waiting", "preparing", "rendering"]);
 
 /**
  * 「API接続状態」の表示用ラベルを、RenderJobの現在の状態から導出する。
- * WORK_ORDER (Sprint7) の表示要件だが、RenderJob自体には専用フィールドを追加せず、
- * 既存の status / provider / errorMessage から画面表示のためだけに算出している。
+ * RenderJob自体には専用フィールドを追加せず、既存の status / provider / errorMessage
+ * から画面表示のためだけに算出している。
  */
 function deriveConnectionStatusLabel(job: RenderJob): string {
   if (job.provider === "mock") {

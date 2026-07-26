@@ -2,8 +2,7 @@ import type { Mood } from "@/types/dream";
 
 /**
  * 記録/編集フォームの自動保存下書き。
- * 「保存済みデータとは区別すること」というSprint3 WORK_ORDERの要件に対応するため、
- * `Dream` とは別の型・別のLocalStorageキー空間で管理する。
+ * 保存済みデータと混同しないよう、`Dream` とは別の型・別のLocalStorageキー空間で管理する。
  */
 export interface DreamDraft {
   title: string;

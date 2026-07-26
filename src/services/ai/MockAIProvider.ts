@@ -23,10 +23,8 @@ const MOVIE_PACKAGE_LATENCY_MS = 1600;
 /**
  * AI未接続のためのモック実装。
  *
- * WORK_ORDER (Sprint4/Sprint5) の「AI未接続の場合はモック実装でも可。ただしインターフェースは
- * 本番対応を前提とする」という要件に対応する。`AIProvider` interfaceのみに依存する形で
- * 実装しており、将来 実プロバイダーへ差し替える際は services/ai/index.ts の1行を
- * 変更するだけで済む。
+ * `AIProvider` interfaceのみに依存する形で実装しており、将来 実プロバイダーへ差し替える際は
+ * services/ai/index.ts の1行を変更するだけで済む。
  */
 export class MockAIProvider implements AIProvider {
   async organizeDream(input: DreamOrganizationInput): Promise<DreamOrganizationResult> {

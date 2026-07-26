@@ -10,8 +10,7 @@ interface MoviePackageResultCardProps {
 
 /**
  * Dream Movie Packageの詳細表示。
- * WORK_ORDER (Sprint5) の表示要件（映画タイトル/ジャンル/雰囲気/あらすじ/シーン一覧
- * ＋各シーンの画像Prompt・動画Prompt）にすべて対応する。
+ * 映画タイトル/ジャンル/雰囲気/あらすじ/シーン一覧＋各シーンの画像Prompt・動画Promptを表示する。
  */
 export function MoviePackageResultCard({ moviePackage }: MoviePackageResultCardProps) {
   return (

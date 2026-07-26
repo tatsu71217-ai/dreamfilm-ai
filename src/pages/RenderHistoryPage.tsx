@@ -9,13 +9,11 @@ import { VIDEO_PROVIDER_LABEL } from "@/types/render";
 import { formatDateLongJP } from "@/utils/date";
 
 /**
- * レンダリング履歴一覧画面。
- * WORK_ORDER (Sprint6) の表示要件（Movie Title / Provider / Status / 作成日時）に対応する。
+ * レンダリング履歴一覧画面（Movie Title / Provider / Status / 作成日時を表示）。
  *
  * Movie Titleは RenderJob 自体には保存されておらず（フィールドとして定義されていないため）、
  * dreamId から夢を引き、その時点の dream.moviePackage.movieTitle を表示している。
- * Movie Packageが再生成された後は、過去のジョブの表示タイトルも最新のものに変わる点に注意
- * （詳細はSPRINT_REPORT.mdの懸念事項を参照）。
+ * Movie Packageが再生成された後は、過去のジョブの表示タイトルも最新のものに変わる点に注意。
  */
 export function RenderHistoryPage() {
   const { jobs, isLoading: isJobsLoading } = useRenderJobs();

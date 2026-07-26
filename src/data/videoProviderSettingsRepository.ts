@@ -33,10 +33,7 @@ function normalizeSettings(settings: VideoProviderSettings): VideoProviderSettin
   };
 }
 
-/**
- * Provider設定・APIキー設定へのアクセスを抽象化するリポジトリインターフェース。
- * WORK_ORDER (Sprint7) の「保存対象: Provider設定, APIキー設定。LocalStorage対応」に対応する。
- */
+/** Provider設定・APIキー設定へのアクセスを抽象化するリポジトリインターフェース。LocalStorageに保存する。 */
 export interface VideoProviderSettingsRepository {
   get(): Promise<VideoProviderSettings>;
   save(settings: VideoProviderSettings): Promise<VideoProviderSettings>;

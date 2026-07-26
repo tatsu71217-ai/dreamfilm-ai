@@ -14,7 +14,7 @@ import type {
  * data/dreamRepository.ts で採用した「interface + 差し替え可能な実装」のパターンを
  * AIサービス層にも踏襲している。
  *
- * 例）将来の実装イメージ（Sprint5時点では未実装。制約により実API呼び出しは行わない）:
+ * 例）将来の実装イメージ（現時点では未実装。実API呼び出しは行わない）:
  *
  *   class AnthropicAIProvider implements AIProvider {
  *     constructor(private apiKey: string) {}
@@ -38,8 +38,8 @@ export interface AIProvider {
 
   /**
    * 夢（および可能であればAI整理結果）から Dream Movie Package を生成する。
-   * WORK_ORDER (Sprint5) で追加。動画・画像そのものの生成は行わず、
-   * 動画生成AIへ後日入力するための構造化データ（Movie + Scene一覧）を返す。
+   * 動画・画像そのものの生成は行わず、動画生成AIへ後日入力するための構造化データ
+   * （Movie + Scene一覧）を返す。
    * 通信エラーやAI側のエラーは例外(Error)としてthrowする想定。
    */
   generateMoviePackage(input: MoviePackageGenerationInput): Promise<DreamMoviePackageResult>;

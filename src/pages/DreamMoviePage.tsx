@@ -4,15 +4,19 @@ import { Clapperboard, Video } from "lucide-react";
 import { PageHeader } from "@/components/common/PageHeader";
 import { MoviePackageResultCard } from "@/components/common/MoviePackageResultCard";
 import { Button } from "@/components/ui/button";
+import { videoProviderSettingsRepository } from "@/data/videoProviderSettingsRepository";
 import { useDreams } from "@/hooks/useDreams";
 import { useMovieGenerator } from "@/hooks/useMovieGenerator";
 import { useRenderJobs } from "@/hooks/useRenderJobs";
+import type { VideoProviderId } from "@/services/video/types";
+import { VIDEO_PROVIDER_LABEL } from "@/types/render";
 import { DEFAULT_STYLE_ID, STYLE_PRESETS, type StyleId } from "@/types/style";
 import {
   DEFAULT_VIDEO_DURATION,
   VIDEO_DURATION_OPTIONS,
   type VideoDurationSeconds,
 } from "@/types/videoProject";
+import { cn } from "@/utils/cn";
 import { generateId } from "@/utils/id";
 
 export function DreamMoviePage() {
@@ -30,6 +34,22 @@ export function DreamMoviePage() {
     DEFAULT_VIDEO_DURATION,
   );
   const [styleId, setStyleId] = React.useState<StyleId>(DEFAULT_STYLE_ID);
+  const [selectedProvider, setSelectedProvider] = React.useState<VideoProviderId | null>(null);
+
+  React.useEffect(() => {
+    let isMounted = true;
+    videoProviderSettingsRepository.get().then((settings) => {
+      if (isMounted) setSelectedProvider(settings.selectedProvider);
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // 尺・スタイルの選択はローカル生成(local)にのみ反映される。
+  // Pollinations/Veoは常にMovie Packageの内容からプロンプトを組み立てるため、
+  // 誤解を招かないよう他のプロバイダー選択時はピッカーを表示しない。
+  const isLocalProvider = selectedProvider === "local";
 
   const dream = dreamId ? getDreamById(dreamId) : undefined;
 
@@ -105,7 +125,7 @@ export function DreamMoviePage() {
   }
 
   if (!dream.organization) {
-    // WORK_ORDER (Sprint5) の前提条件: 「AI整理完了後」にのみ映画化できる
+    // AI整理完了後にのみ映画化できる
     return (
       <div className="flex min-h-dvh flex-col">
         <PageHeader title="映画化する" />
@@ -199,7 +219,7 @@ export function DreamMoviePage() {
           </>
         ) : null}
 
-        {/* 「動画を生成」はMovie Packageが保存済みの場合にのみ表示する (WORK_ORDER Sprint6) */}
+        {/* 「動画を生成」はMovie Packageが保存済みの場合にのみ表示する */}
         {dream.moviePackage ? (
           <div className="flex flex-col gap-3 rounded-xl border border-gold/30 bg-gold/5 p-4">
             <p className="text-sm text-muted-foreground">
@@ -207,63 +227,74 @@ export function DreamMoviePage() {
               動画生成プロバイダーとAPIキーは設定画面で変更できます。
             </p>
 
-            <div className="flex flex-col gap-2">
-              <span className="text-xs font-medium text-muted-foreground">動画の長さ</span>
-              <div
-                className="flex gap-2"
-                role="radiogroup"
-                aria-label="動画の長さを選択"
-              >
-                {VIDEO_DURATION_OPTIONS.map((option) => {
-                  const isActive = option === durationSeconds;
-                  return (
-                    <button
-                      key={option}
-                      type="button"
-                      role="radio"
-                      aria-checked={isActive}
-                      onClick={() => setDurationSeconds(option)}
-                      className={
-                        isActive
-                          ? "flex-1 rounded-lg border border-gold bg-gold/15 px-3 py-2 text-sm text-gold"
-                          : "flex-1 rounded-lg border border-border bg-secondary/40 px-3 py-2 text-sm text-muted-foreground hover:text-foreground"
-                      }
-                    >
-                      {option}秒
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+            {isLocalProvider ? (
+              <>
+                <div className="flex flex-col gap-2">
+                  <span className="text-xs font-medium text-muted-foreground">動画の長さ</span>
+                  <div
+                    className="flex gap-2"
+                    role="radiogroup"
+                    aria-label="動画の長さを選択"
+                  >
+                    {VIDEO_DURATION_OPTIONS.map((option) => {
+                      const isActive = option === durationSeconds;
+                      return (
+                        <button
+                          key={option}
+                          type="button"
+                          role="radio"
+                          aria-checked={isActive}
+                          onClick={() => setDurationSeconds(option)}
+                          className={cn(
+                            "flex-1 rounded-lg border px-3 py-2 text-sm",
+                            isActive
+                              ? "border-gold bg-gold/15 text-gold"
+                              : "border-border bg-secondary/40 text-muted-foreground hover:text-foreground",
+                          )}
+                        >
+                          {option}秒
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
 
-            <div className="flex flex-col gap-2">
-              <span className="text-xs font-medium text-muted-foreground">映像スタイル</span>
-              <div
-                className="flex flex-wrap gap-2"
-                role="radiogroup"
-                aria-label="映像スタイルを選択"
-              >
-                {Object.values(STYLE_PRESETS).map((preset) => {
-                  const isActive = preset.id === styleId;
-                  return (
-                    <button
-                      key={preset.id}
-                      type="button"
-                      role="radio"
-                      aria-checked={isActive}
-                      onClick={() => setStyleId(preset.id)}
-                      className={
-                        isActive
-                          ? "rounded-full border border-gold bg-gold/15 px-3 py-1.5 text-xs text-gold"
-                          : "rounded-full border border-border bg-secondary/40 px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground"
-                      }
-                    >
-                      {preset.label}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+                <div className="flex flex-col gap-2">
+                  <span className="text-xs font-medium text-muted-foreground">映像スタイル</span>
+                  <div
+                    className="flex flex-wrap gap-2"
+                    role="radiogroup"
+                    aria-label="映像スタイルを選択"
+                  >
+                    {Object.values(STYLE_PRESETS).map((preset) => {
+                      const isActive = preset.id === styleId;
+                      return (
+                        <button
+                          key={preset.id}
+                          type="button"
+                          role="radio"
+                          aria-checked={isActive}
+                          onClick={() => setStyleId(preset.id)}
+                          className={cn(
+                            "rounded-full border px-3 py-1.5 text-xs",
+                            isActive
+                              ? "border-gold bg-gold/15 text-gold"
+                              : "border-border bg-secondary/40 text-muted-foreground hover:text-foreground",
+                          )}
+                        >
+                          {preset.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </>
+            ) : selectedProvider ? (
+              <p className="rounded-lg border border-border bg-secondary/30 px-3 py-2 text-xs text-muted-foreground">
+                現在のプロバイダー「{VIDEO_PROVIDER_LABEL[selectedProvider]}
+                」は動画の長さ・映像スタイルの選択には対応していません。Movie Packageの内容から自動で生成されます。
+              </p>
+            ) : null}
 
             {renderError ? (
               <p role="alert" className="text-sm text-destructive">

@@ -5,9 +5,8 @@ import { createRenderService } from "@/services/render/RenderService";
 
 /**
  * アプリ全体で使用する RenderService の単一インスタンス。
- * Sprint7より、固定のVideoProviderではなく `videoProviderFactory` と
- * `videoProviderSettingsRepository` を渡す構成に変更し、レンダリング開始のたびに
- * 現在のProvider設定（Mock / Google Veo）を反映できるようにしている。
+ * 固定のVideoProviderではなく `videoProviderFactory` と `videoProviderSettingsRepository` を
+ * 渡す構成にすることで、レンダリング開始のたびに現在のProvider設定を反映できるようにしている。
  */
 export const renderService = createRenderService(
   videoProviderFactory,

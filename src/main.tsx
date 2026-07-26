@@ -18,7 +18,7 @@ ReactDOM.createRoot(rootElement).render(
   </React.StrictMode>,
 );
 
-// PWA: Service Workerを登録する（Sprint9）。
+// PWA: Service Workerを登録する。
 // 開発時(Vite dev server)ではキャッシュがHMRの妨げになるため、本番ビルド時のみ登録する。
 if (import.meta.env.PROD) {
   registerServiceWorker();

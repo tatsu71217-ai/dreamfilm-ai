@@ -32,9 +32,8 @@ interface ActivePoll {
  * Movie Package → Render Job生成 → VideoProvider実行 → Status更新 → Repository経由での保存、
  * という一連のパイプラインを担うサービス。
  *
- * WORK_ORDER (Sprint7) により、レンダリング開始のたびに現在のProvider設定
- * (data/videoProviderSettingsRepository.ts) を読み取り、`VideoProviderFactory` を通じて
- * Mock/Google Veoいずれかの `VideoProvider` を生成する構成に変更した。
+ * レンダリング開始のたびに現在のProvider設定 (data/videoProviderSettingsRepository.ts) を読み取り、
+ * `VideoProviderFactory` を通じて対応する `VideoProvider` を生成する。
  * UI層は本サービスのみに依存し、`VideoProvider` や `VideoProviderFactory` を直接importしない。
  */
 export interface RenderService {
@@ -170,7 +169,7 @@ class DefaultRenderService implements RenderService {
         }
       } catch (error) {
         // 通信失敗・Timeout等、ポーリング中のエラーは一定回数まではリトライに任せる。
-        // 連続で失敗し続ける場合はユーザーへエラーとして明示する（WORK_ORDER Sprint7の要件）。
+        // 連続で失敗し続ける場合はユーザーへエラーとして明示する。
         console.error("レンダリング状況の取得に失敗しました。", error);
 
         if (!active) return;

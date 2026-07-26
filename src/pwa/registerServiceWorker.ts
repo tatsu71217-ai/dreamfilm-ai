@@ -1,6 +1,5 @@
 /**
  * Service Workerの登録と更新検知を行うモジュール。
- * WORK_ORDER (Sprint9) の「更新検知」要件に対応する。
  *
  * 新しいSWが待機状態(waiting)になったタイミングで、
  * `dreamfilm-ai:sw-update-available` というカスタムイベントを window へ発火する。

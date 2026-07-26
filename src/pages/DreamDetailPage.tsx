@@ -141,7 +141,7 @@ export function DreamDetailPage() {
           </Link>
         </Button>
 
-        {/* 「映画化する」はAI整理完了後にのみ表示する (WORK_ORDER Sprint5) */}
+        {/* 「映画化する」はAI整理完了後にのみ表示する */}
         {dream.organization ? (
           <Button variant="outline" className="w-full border-gold/40 text-gold" asChild>
             <Link to={`/dream/${dream.id}/movie`}>
@@ -164,9 +164,6 @@ export function DreamDetailPage() {
           </CardContent>
         </Card>
       </div>
-
-      {/* 編集: Sprint3で実装。編集ページ(/dream/:id/edit)へ遷移するリンクに変更済み */}
-      {/* 映画生成: Sprint5で「映画化する」(Movie Package生成)として実装。旧プレースホルダーダイアログは削除済み */}
 
       {/* 削除確認ダイアログ: 実際にLocalStorageから削除する */}
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>

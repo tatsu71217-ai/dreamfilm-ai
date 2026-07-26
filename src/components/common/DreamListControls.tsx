@@ -25,10 +25,6 @@ interface DreamListControlsProps {
   onMoodFilterChange: (value: MoodFilter) => void;
 }
 
-/**
- * Home画面の夢一覧に対する検索・並び替え・気分フィルターをまとめたコントロール群。
- * WORK_ORDER (Sprint3) の「検索」「並び替え」「気分フィルター」要件に対応する。
- */
 export function DreamListControls({
   query,
   onQueryChange,

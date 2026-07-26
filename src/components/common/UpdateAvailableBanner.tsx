@@ -5,8 +5,6 @@ import { activateWaitingServiceWorker, SW_UPDATE_AVAILABLE_EVENT } from "@/pwa/r
 
 /**
  * Service Workerの更新検知に連動するバナー。
- * WORK_ORDER (Sprint9) の「更新検知」要件に対応する。
- *
  * pwa/registerServiceWorker.ts が発火する `SW_UPDATE_AVAILABLE_EVENT` を購読し、
  * 新しいバージョンが利用可能になったタイミングでのみ表示する。
  */

@@ -9,10 +9,7 @@ interface MoodSelectorProps {
   "aria-invalid"?: boolean;
 }
 
-/**
- * 気分を1つ選択するチップ形式のセレクター。
- * Sprint2 WORK_ORDER の「気分選択」要件に対応。
- */
+/** 気分を1つ選択するチップ形式のセレクター */
 export function MoodSelector({
   value,
   onChange,

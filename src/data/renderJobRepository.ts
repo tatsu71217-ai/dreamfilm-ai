@@ -8,12 +8,10 @@ import { generateId } from "@/utils/id";
 /**
  * RenderJobデータへのアクセスを抽象化するリポジトリインターフェース。
  *
- * WORK_ORDER (Sprint6) は保存対象として「RenderJob」と「RenderHistory」の両方を挙げているが、
- * 本実装ではこれらを1つのコレクションとして扱っている。
- * 「現在のジョブの状態」も「過去の履歴」も、本質的には同じ RenderJob の集合に対する
- * 異なる見方（1件取得 vs 一覧取得）に過ぎないと判断したためである
- * （詳細は SPRINT_REPORT.md の懸念事項を参照。将来的に履歴の保持件数やアーカイブ方針が
- *  必要になった場合は、このリポジトリの実装のみを変更すればよい）。
+ * 「現在のジョブの状態」と「過去の履歴」は、本質的には同じ RenderJob の集合に対する
+ * 異なる見方（1件取得 vs 一覧取得）に過ぎないため、1つのコレクションとして扱っている。
+ * 将来的に履歴の保持件数やアーカイブ方針が必要になった場合は、このリポジトリの実装のみを
+ * 変更すればよい。
  *
  * data/dreamRepository.ts と同様、Promise ベースのインターフェースにすることで、
  * 将来Supabase等へ差し替える際もUI層のコードを変更せずに済むようにしている。
@@ -25,7 +23,7 @@ export interface RenderJobRepository {
   listByDreamId(dreamId: string): Promise<RenderJob[]>;
   create(input: CreateRenderJobInput): Promise<RenderJob>;
   update(id: string, patch: Partial<Omit<RenderJob, "id">>): Promise<RenderJob>;
-  /** Sprint8で追加: Render履歴から1件削除する */
+  /** Render履歴から1件削除する */
   remove(id: string): Promise<void>;
 }
 

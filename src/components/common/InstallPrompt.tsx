@@ -12,8 +12,7 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 /**
- * ホーム画面への追加を案内するバナー。
- * WORK_ORDER (Sprint9) の「インストール案内（初回利用時、iPhone/Androidそれぞれ最適な表示）」に対応する。
+ * ホーム画面への追加を案内するバナー。iPhone/Androidそれぞれで最適な案内を出し分ける。
  *
  * - Android Chrome等: `beforeinstallprompt` イベントを捕捉し、ボタンからネイティブのインストールダイアログを開く
  * - iOS Safari: `beforeinstallprompt` に相当するAPIが存在しないため、

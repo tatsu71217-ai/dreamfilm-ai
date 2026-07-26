@@ -16,24 +16,21 @@ import { generateDreamId, generateDummyScore } from "@/utils/dream";
  * すべてのメソッドを Promise ベースにしているのは、現状はLocalStorageのみで完結させつつも、
  * 将来 `DreamRepository` の実装を Supabase クライアント呼び出しに差し替えるだけで、
  * hooks/useDreams.tsx 以降のロジックを一切変更せずに済むようにするため。
- * （Sprint1の InMemoryDreamRepository → Sprint2の LocalStorageDreamRepository への差し替えを、
- *   この設計のおかげでUI層のコード変更なしに実施できた実績がある）
  */
 export interface DreamRepository {
   list(): Promise<Dream[]>;
   getById(id: string): Promise<Dream | undefined>;
   create(input: CreateDreamInput): Promise<Dream>;
-  /** Sprint3で追加: 保存済みの夢を編集する */
   update(id: string, input: UpdateDreamInput): Promise<Dream>;
-  /** Sprint4で追加: AIによる整理結果を既存の夢へ保存する */
+  /** AIによる整理結果を既存の夢へ保存する */
   saveOrganization(id: string, organization: DreamOrganization): Promise<Dream>;
-  /** Sprint5で追加: Dream Movie Packageを既存の夢へ保存する */
+  /** Dream Movie Packageを既存の夢へ保存する */
   saveMoviePackage(id: string, moviePackage: DreamMoviePackage): Promise<Dream>;
   remove(id: string): Promise<void>;
 }
 
 /**
- * Sprint2以前のMood分類からSprint3の分類への変換テーブル。
+ * 旧いMood分類から現行のMood型への変換テーブル。
  * 過去にLocalStorageへ保存されたデータが新しいMood型に存在しない値を持つ場合に用いる
  * 後方互換のためのフォールバック。
  *
@@ -62,10 +59,7 @@ function normalizeMood(rawMood: unknown): Mood {
   return "neutral";
 }
 
-/**
- * LocalStorageを使った永続化実装。
- * 「LocalStorageへ保存」「アプリ再起動後も保持」というWORK_ORDER要件に対応する。
- */
+/** LocalStorageを使った永続化実装。アプリ再起動後もデータを保持する。 */
 class LocalStorageDreamRepository implements DreamRepository {
   private readonly storageKey = DREAMS_STORAGE_KEY;
 
@@ -80,7 +74,7 @@ class LocalStorageDreamRepository implements DreamRepository {
         console.warn("保存された夢データの形式が不正なため、空の状態として扱います。");
         return [];
       }
-      // 過去のSprintで保存されたMood値が現行のMood型と異なる場合に備えて正規化する
+      // 過去に保存されたMood値が現行のMood型と異なる場合に備えて正規化する
       return (parsed as Dream[]).map((dream) => ({
         ...dream,
         mood: normalizeMood(dream.mood),

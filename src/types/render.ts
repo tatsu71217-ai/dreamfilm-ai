@@ -26,10 +26,7 @@ export const VIDEO_PROVIDER_LABEL: Record<VideoProviderId, string> = {
 /** LocalStorage 保存キー（RenderJob一覧。Render履歴画面もこのデータを一覧表示する） */
 export const RENDER_JOBS_STORAGE_KEY = "dreamfilm-ai:render-jobs";
 
-/**
- * 動画生成（レンダリング）ジョブ1件分のデータ構造。
- * WORK_ORDER (Sprint6) の RenderJob モデル要件に対応する。
- */
+/** 動画生成（レンダリング）ジョブ1件分のデータ構造 */
 export interface RenderJob {
   id: string;
   dreamId: string;
@@ -43,7 +40,10 @@ export interface RenderJob {
   startedAt?: string;
   completedAt?: string;
   errorMessage?: string;
-  /** 出力動画のURL。Sprint6では実際の動画生成を行わないため未使用 */
+  /**
+   * 出力動画の参照先。実プロバイダーは動画本体をIndexedDBへ保存し、
+   * ここにはVideoProviderStatusSnapshot経由で `LOCAL_VIDEO_URL_MARKER` を設定する。
+   */
   outputUrl?: string;
 }
 

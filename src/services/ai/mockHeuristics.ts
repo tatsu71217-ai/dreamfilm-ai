@@ -78,7 +78,7 @@ export function buildTitleSuggestion(body: string, fallbackTitle: string): strin
     : firstSentence;
 }
 
-/** 本文の先頭2〜3文をつなげて要約とする（2〜3文の要約というWORK_ORDER要件に対応） */
+/** 本文の先頭2〜3文をつなげて要約とする */
 export function buildSummary(body: string): string {
   const sentences = splitSentences(body).slice(0, SUMMARY_MAX_SENTENCES);
   if (sentences.length === 0) {

@@ -4,10 +4,6 @@ import type { DreamOrganizationResult } from "@/services/ai/types";
 /** LocalStorage 保存キー（夢データ一覧） */
 export const DREAMS_STORAGE_KEY = "dreamfilm-ai:dreams";
 
-/**
- * 夢を記録する際に選択する気分。
- * WORK_ORDER (Sprint2) の「気分選択」要件に対応する。
- */
 export type Mood = "happy" | "neutral" | "mysterious" | "scary" | "sad";
 
 export const MOOD_OPTIONS: ReadonlyArray<{ value: Mood; label: string; emoji: string }> = [
@@ -95,9 +91,9 @@ export interface Dream {
   score: DreamScore;
   createdAt: string;
   updatedAt?: string;
-  /** AIによる整理結果（Sprint4で追加。未整理の場合は未設定） */
+  /** AIによる整理結果（未整理の場合は未設定） */
   organization?: DreamOrganization;
-  /** Dream Movie Package（Sprint5で追加。未生成の場合は未設定） */
+  /** Dream Movie Package（未生成の場合は未設定） */
   moviePackage?: DreamMoviePackage;
 }
 

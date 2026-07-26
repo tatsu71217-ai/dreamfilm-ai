@@ -9,8 +9,7 @@ import type {
 /**
  * モック完了時に返すサンプル動画URL。
  * 実際の動画生成は行わないため、公開されている汎用テスト用動画（Big Buck Bunny）を
- * プレースホルダーとして使用する。Sprint8の「動画プレビュー/保存/共有」機能を
- * Mockプロバイダーだけで一通り確認できるようにするために追加した。
+ * プレースホルダーとして使用する。
  */
 const MOCK_VIDEO_URL =
   "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";

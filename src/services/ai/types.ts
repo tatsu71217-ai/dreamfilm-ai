@@ -35,7 +35,7 @@ export interface DreamMoviePackageResult {
   genre: string;
   mood: string;
   synopsis: string;
-  /** 尺（秒）。WORK_ORDER (Sprint5) により現時点では30秒固定 */
+  /** 尺（秒）。現時点では30秒固定 */
   duration: number;
   scenes: DreamMovieScene[];
 }
@@ -44,6 +44,6 @@ export interface DreamMoviePackageResult {
 export interface MoviePackageGenerationInput {
   title: string;
   body: string;
-  /** AI整理（Sprint4）が完了していれば、その結果をより豊かな入力として利用する */
+  /** AI整理が完了していれば、その結果をより豊かな入力として利用する */
   organization?: DreamOrganizationResult;
 }

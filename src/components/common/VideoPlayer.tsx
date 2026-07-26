@@ -14,8 +14,6 @@ type IOSVideoElement = HTMLVideoElement & {
 
 /**
  * 再生/一時停止/シークバー/全画面表示に対応したカスタム動画プレイヤー。
- * WORK_ORDER (Sprint8) の「動画プレビュー」要件（iPhone/Android対応）に対応する。
- *
  * ブラウザ標準のcontrols属性はiOS SafariとAndroid Chromeで見た目が大きく異なるため、
  * アプリの世界観に合わせた共通のUIを自前で実装している。
  * 全画面表示は、標準の Fullscreen API を優先しつつ、それが使えない場合（主にiOS Safari）は

@@ -26,17 +26,15 @@ const INFO_DIALOG_CONTENT: Record<
 > = {
   app: {
     title: "DreamFilm AI について",
-    description: `バージョン ${APP_VERSION}（Sprint1）\n見た夢を記録し、いつか映画のように振り返るための体験アプリです。`,
+    description: `バージョン ${APP_VERSION}\n見た夢を記録し、いつか映画のように振り返るための体験アプリです。`,
   },
   terms: {
     title: "利用規約",
-    description:
-      "こちらはSprint1時点のプレースホルダーです。正式な利用規約は今後の Sprint で追加されます。",
+    description: "現在プレースホルダーの内容です。正式な利用規約は今後追加されます。",
   },
   privacy: {
     title: "プライバシーポリシー",
-    description:
-      "こちらはSprint1時点のプレースホルダーです。正式なプライバシーポリシーは今後の Sprint で追加されます。",
+    description: "現在プレースホルダーの内容です。正式なプライバシーポリシーは今後追加されます。",
   },
 };
 

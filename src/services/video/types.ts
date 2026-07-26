@@ -13,15 +13,14 @@ import type { VideoDurationSeconds } from "@/types/videoProject";
  *   過去に作成されたRenderJobが `provider: "mock"` を保持している場合があるため、
  *   型・表示ラベルとしては残している。
  *
- * Sprint6時点で型だけ定義されていた runway/kling/pika/luma は、実装される見込みがなく
+ * かつて型だけ定義されていた runway/kling/pika/luma は、実装される見込みがなく
  * Factoryでも一律エラーになるだけの死んだ分岐だったため削除した。
  */
 export type VideoProviderId = "local" | "pollinations" | "veo" | "mock";
 
 /**
- * レンダリングジョブの状態。
- * WORK_ORDER (Sprint6) の「Waiting/Preparing/Rendering/Completed/Failed/Cancelled」の
- * 6状態に対応する。TypeScriptの `enum` ではなく文字列リテラルUnion + ラベルMapで管理している
+ * レンダリングジョブの状態（waiting/preparing/rendering/completed/failed/cancelledの6種類）。
+ * TypeScriptの `enum` ではなく文字列リテラルUnion + ラベルMapで管理している
  * （プロジェクト内の DreamStatus 等、既存の状態管理パターンとの一貫性を優先した設計判断）。
  */
 export type RenderStatus =
