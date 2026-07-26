@@ -7,13 +7,19 @@
  * こちらは「画面に何を描くかを決める」ためのものである点が異なる。
  */
 
+import {
+  buildEffectAssets,
+  getBackgroundFallback,
+  getCharacterDefault,
+  pickSceneSoundEffect,
+} from "@/services/assets/assetLibrary";
 import { splitSentences } from "@/services/ai/mockHeuristics";
 import type {
+  AudioAsset,
   BackgroundAsset,
   BackgroundVariant,
   CharacterAsset,
   CharacterVariant,
-  EffectAsset,
 } from "@/types/asset";
 import type { Mood } from "@/types/dream";
 import type {
@@ -113,6 +119,7 @@ export interface SplitScenesInput {
 export interface SplitScenesResult {
   scenes: DreamScene[];
   subtitleTrack: SubtitleTrack;
+  soundEffects: AudioAsset[];
 }
 
 /**
@@ -133,6 +140,7 @@ export function splitDreamIntoScenes(input: SplitScenesInput): SplitScenesResult
   const baseMood = MOOD_TO_SCENE_MOOD[input.mood] ?? "calm";
   const scenes: DreamScene[] = [];
   const cues: SubtitleCue[] = [];
+  const soundEffects: AudioAsset[] = [];
 
   let cursor = 0;
   for (let index = 0; index < sceneCount; index += 1) {
@@ -152,7 +160,7 @@ export function splitDreamIntoScenes(input: SplitScenesInput): SplitScenesResult
       endTime,
       background: buildBackground(sourceText, style, sceneMood),
       characters: buildCharacters(sourceText, style, sceneMood),
-      effects: buildEffects(style, sceneMood),
+      effects: buildEffectAssets(style.id, sceneMood),
       cameraMotion: pickCameraMotion(style, sceneMood, index),
       // 先頭シーンは必ずフェードイン。以降はスタイルの傾向から選ぶ
       transitionIn: index === 0 ? "fade" : pickTransition(style, index),
@@ -164,9 +172,13 @@ export function splitDreamIntoScenes(input: SplitScenesInput): SplitScenesResult
     if (subtitle) {
       cues.push(subtitle);
     }
+    // シーン切り替えのタイミングでSEを鳴らす（先頭シーンは無音で始める）
+    if (index > 0) {
+      soundEffects.push(pickSceneSoundEffect(style.id, sceneMood, index, startTime));
+    }
   }
 
-  return { scenes, subtitleTrack: { cues } };
+  return { scenes, subtitleTrack: { cues }, soundEffects };
 }
 
 /**
@@ -290,7 +302,7 @@ function buildBackground(
   const matched = BACKGROUND_KEYWORDS.find((rule) =>
     rule.words.some((word) => sentence.includes(word)),
   );
-  const variant: BackgroundVariant = matched?.variant ?? "void";
+  const variant: BackgroundVariant = matched?.variant ?? getBackgroundFallback(style.id);
   const tint = MOOD_TINT[mood];
 
   return {
@@ -339,9 +351,7 @@ function buildCharacters(
     rule.words.some((word) => sentence.includes(word)),
   );
 
-  // ゆるキャラ風は、該当語がなくてもマスコットを1体出して世界観を保つ
-  const variant: CharacterVariant =
-    matched?.variant ?? (style.id === "mascot" ? "mascot" : "none");
+  const variant: CharacterVariant = matched?.variant ?? getCharacterDefault(style.id);
 
   if (variant === "none") {
     return [];
@@ -375,19 +385,6 @@ function buildCharacters(
       flipped: false,
     },
   ];
-}
-
-function buildEffects(style: StylePreset, mood: SceneMood): EffectAsset[] {
-  const intensity = mood === "tense" ? 0.85 : mood === "calm" ? 0.4 : 0.6;
-
-  return style.effects.map((variant) => ({
-    id: generateId(),
-    kind: "effect" as const,
-    label: variant,
-    variant,
-    intensity,
-    color: style.palette.accent,
-  }));
 }
 
 /** スタイルの候補から、シーンごとに変化をつけて選ぶ */
