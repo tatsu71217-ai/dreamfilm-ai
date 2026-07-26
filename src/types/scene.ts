@@ -13,6 +13,8 @@ import type {
   CharacterAsset,
   EffectAsset,
 } from "@/types/asset";
+import type { NarrativeBeat } from "@/types/sceneGraph";
+import type { CausalRelation, EventKind } from "@/types/story";
 import type { StyleId } from "@/types/style";
 
 /** カットの速さの傾向 */
@@ -87,6 +89,26 @@ export interface SubtitleTrack {
   cues: SubtitleCue[];
 }
 
+/**
+ * そのシーンが物語上「何を表しているか」。
+ * StoryEngine → NarrativePlanner の判断結果を描画層まで持ち回るためのもので、
+ * カメラ・エフェクト・SEはこの内容に従って決まる（演出側で勝手に決めない）。
+ */
+export interface SceneStoryInfo {
+  /** 起承転結のどれか */
+  beat: NarrativeBeat;
+  /** 何が起きたか */
+  eventKind: EventKind;
+  /** 誰が。特定できない場合はnull */
+  who: string | null;
+  /** どこで。特定できない場合はnull */
+  where: string | null;
+  /** どう変化したか 0〜1 */
+  changeIntensity: number;
+  /** なぜこのシーンへ移ってきたか */
+  transitionReason: CausalRelation;
+}
+
 /** レンダリング対象の1シーン */
 export interface DreamScene {
   sceneId: string;
@@ -108,4 +130,6 @@ export interface DreamScene {
   mood: SceneMood;
   /** このシーンの元になった夢の一文。再編集時の手がかりとして保持する */
   sourceText: string;
+  /** このシーンが物語上どの出来事を表しているか */
+  story: SceneStoryInfo;
 }

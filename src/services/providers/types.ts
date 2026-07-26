@@ -20,6 +20,7 @@ import type {
   BackgroundVariant,
   CharacterVariant,
   EffectAsset,
+  SoundEffectVariant,
 } from "@/types/asset";
 import type { MotionId } from "@/types/motion";
 import type { SceneMood } from "@/types/scene";
@@ -90,6 +91,8 @@ export interface AssetProvider {
     mood: SceneMood,
     sceneIndex: number,
     atTime: number,
+    /** 物語の遷移理由から決まる音。指定時はスタイルのプールより優先する */
+    preferredVariant?: SoundEffectVariant,
   ): AudioAsset;
   buildEffectAssets(styleId: StyleId, mood: SceneMood): EffectAsset[];
 }

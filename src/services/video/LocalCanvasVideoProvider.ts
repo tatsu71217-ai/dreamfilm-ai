@@ -21,9 +21,9 @@ interface JobState {
 /**
  * ブラウザ内（Canvas + MediaRecorder）で動画を生成する VideoProvider 実装。
  *
- * 外部APIも課金も不要な既定のプロバイダー。sceneSplitterでシーンへ分解し、
- * videoRecorderで実際に録画する。録画は実時間でしか進まない（15〜30秒の動画は
- * 15〜30秒かかる）ため、進捗はvideoRecorderからのコールバックで報告する。
+ * 外部APIも課金も不要な既定のプロバイダー。DirectorEngineが夢文を物語として
+ * シーン列へ組み立て、videoRecorderで実際に録画する。録画は実時間でしか進まない
+ * （15〜30秒の動画は15〜30秒かかる）ため、進捗はvideoRecorderからのコールバックで報告する。
  */
 export class LocalCanvasVideoProvider implements VideoProvider {
   readonly id: VideoProviderId = "local";

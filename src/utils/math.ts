@@ -1,7 +1,7 @@
 /**
  * 汎用的な小さい数値ユーティリティ。
  *
- * services/scene/sceneSplitter.ts（シーンへの秒数配分）と
+ * services/story/narrativePlanner.ts（シーンへの秒数配分）と
  * services/ai/movieHeuristics.ts（Movie Packageのシーンへの秒数配分）で
  * 同じ「合計値をN個へ均等配分し、端数を前方から1つずつ乗せる」処理が重複していたため、
  * ここへ集約する。

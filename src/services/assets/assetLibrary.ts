@@ -77,15 +77,22 @@ export function pickCharacterMotion(variant: CharacterVariant, mood: SceneMood):
   return "walk";
 }
 
-/** シーン切り替え時に鳴らすSEを1件選ぶ */
+/**
+ * シーン切り替え時に鳴らすSEを1件選ぶ。
+ * `preferredVariant`（物語の遷移理由から決まる音）が指定された場合はそれを優先する。
+ * SEはすべてWebAudioで合成するため、スタイルの音のプールに無い種類でも鳴らせる。
+ */
 export function pickSceneSoundEffect(
   styleId: StyleId,
   mood: SceneMood,
   sceneIndex: number,
   atTime: number,
+  preferredVariant?: SoundEffectVariant,
 ): AudioAsset {
   const pool = SOUND_EFFECT_POOL[styleId];
-  const variant = mood === "tense" && pool.includes("impact") ? "impact" : pool[sceneIndex % pool.length];
+  const variant =
+    preferredVariant ??
+    (mood === "tense" && pool.includes("impact") ? "impact" : pool[sceneIndex % pool.length]);
 
   return {
     id: generateId(),
