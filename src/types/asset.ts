@@ -11,6 +11,7 @@
  *  - 素材の色・強度をスタイルやシーンの情感に応じて連続的に変えられる
  */
 
+import type { MotionId } from "@/types/motion";
 import type { EffectKind } from "@/types/scene";
 
 export type AssetKind = "background" | "character" | "effect" | "audio";
@@ -70,6 +71,8 @@ export interface CharacterAsset extends AssetBase {
   color: string;
   /** 左右反転して描くか */
   flipped: boolean;
+  /** MotionLibraryのプリセットID。未指定はidle相当 */
+  motion?: MotionId;
 }
 
 export interface EffectAsset extends AssetBase {

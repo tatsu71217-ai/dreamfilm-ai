@@ -11,6 +11,7 @@ import {
   buildEffectAssets,
   getBackgroundFallback,
   getCharacterDefault,
+  pickCharacterMotion,
   pickSceneSoundEffect,
 } from "@/services/assets/assetLibrary";
 import { splitSentences } from "@/services/ai/mockHeuristics";
@@ -358,6 +359,7 @@ function buildCharacters(
   }
 
   const color = mood === "tense" ? "#000000" : style.palette.foreground;
+  const motion = pickCharacterMotion(variant, mood);
 
   if (variant === "crowd") {
     // 群衆は複数体を散らして配置する
@@ -370,6 +372,7 @@ function buildCharacters(
       scale: 0.22 - i * 0.02,
       color,
       flipped: i % 2 === 1,
+      motion,
     }));
   }
 
@@ -383,6 +386,7 @@ function buildCharacters(
       scale: variant === "creature" ? 0.34 : 0.28,
       color,
       flipped: false,
+      motion,
     },
   ];
 }

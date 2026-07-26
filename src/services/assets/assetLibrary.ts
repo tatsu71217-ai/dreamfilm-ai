@@ -10,6 +10,7 @@ import type {
   EffectAsset,
   SoundEffectVariant,
 } from "@/types/asset";
+import type { MotionId } from "@/types/motion";
 import type { SceneMood } from "@/types/scene";
 import { getStylePreset, type StyleId } from "@/types/style";
 import { generateId } from "@/utils/id";
@@ -53,6 +54,24 @@ export function getBackgroundFallback(styleId: StyleId): BackgroundVariant {
 
 export function getCharacterDefault(styleId: StyleId): CharacterVariant {
   return CHARACTER_DEFAULT[styleId];
+}
+
+/** キャラクターの見た目(variant)と情感から、MotionLibraryのプリセットを1つ選ぶ */
+export function pickCharacterMotion(variant: CharacterVariant, mood: SceneMood): MotionId {
+  if (variant === "creature") {
+    return mood === "tense" ? "run" : "turn";
+  }
+  if (variant === "mascot") {
+    return mood === "joyful" || mood === "uplifting" ? "jump" : "idle";
+  }
+  if (variant === "crowd") {
+    return mood === "tense" ? "run" : "walk";
+  }
+  // silhouette / figure など人物系
+  if (mood === "tense") return "run";
+  if (mood === "uplifting") return "float";
+  if (mood === "sad") return "idle";
+  return "walk";
 }
 
 /** シーン切り替え時に鳴らすSEを1件選ぶ */
