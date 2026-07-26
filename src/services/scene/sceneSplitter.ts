@@ -30,7 +30,9 @@ import {
   SCENE_COUNT_RANGE,
   type VideoDurationSeconds,
 } from "@/types/videoProject";
+import { parseHexColor, type RgbColor } from "@/utils/color";
 import { generateId } from "@/utils/id";
+import { distributeEvenly } from "@/utils/math";
 
 /** 1シーンの最短・最長（指示書「1シーン 2〜6秒程度」） */
 const MIN_SCENE_SECONDS = 2;
@@ -217,14 +219,8 @@ export function distributeSceneSeconds(
   totalSeconds: number,
   sceneCount: number,
 ): number[] {
-  const base = Math.floor(totalSeconds / sceneCount);
-  const remainder = totalSeconds - base * sceneCount;
-
   // 端数は前方のシーンへ1秒ずつ配る（後半が間延びしないように）
-  const seconds = Array.from({ length: sceneCount }, (_, index) =>
-    index < remainder ? base + 1 : base,
-  );
-
+  const seconds = distributeEvenly(totalSeconds, sceneCount);
   return clampSecondsPreservingTotal(seconds, totalSeconds);
 }
 
@@ -428,30 +424,7 @@ function buildSubtitleCue(
 /* CSSに頼らずCanvasへ直接描くため、色の調整も自前で行う                    */
 /* ------------------------------------------------------------------ */
 
-interface Rgb {
-  r: number;
-  g: number;
-  b: number;
-}
-
-function parseHex(hex: string): Rgb {
-  const normalized = hex.replace("#", "");
-  const expanded =
-    normalized.length === 3
-      ? normalized
-          .split("")
-          .map((c) => c + c)
-          .join("")
-      : normalized;
-
-  return {
-    r: parseInt(expanded.slice(0, 2), 16),
-    g: parseInt(expanded.slice(2, 4), 16),
-    b: parseInt(expanded.slice(4, 6), 16),
-  };
-}
-
-function toHex({ r, g, b }: Rgb): string {
+function toHex({ r, g, b }: RgbColor): string {
   const channel = (value: number) =>
     Math.max(0, Math.min(255, Math.round(value)))
       .toString(16)
@@ -461,15 +434,15 @@ function toHex({ r, g, b }: Rgb): string {
 
 /** amount > 0 で明るく、< 0 で暗くする */
 export function adjustColor(hex: string, amount: number): string {
-  const { r, g, b } = parseHex(hex);
+  const { r, g, b } = parseHexColor(hex);
   const shift = 255 * amount;
   return toHex({ r: r + shift, g: g + shift, b: b + shift });
 }
 
 /** 2色を ratio(0〜1) で混ぜる */
 export function mixColors(hexA: string, hexB: string, ratio: number): string {
-  const a = parseHex(hexA);
-  const b = parseHex(hexB);
+  const a = parseHexColor(hexA);
+  const b = parseHexColor(hexB);
   const t = Math.max(0, Math.min(1, ratio));
   return toHex({
     r: a.r + (b.r - a.r) * t,

@@ -1,3 +1,4 @@
+import { writeJsonOrThrow } from "@/data/localStorageJson";
 import { isMockProviderAvailable } from "@/services/video/VideoProviderFactory";
 import {
   DEFAULT_VIDEO_PROVIDER_SETTINGS,
@@ -58,15 +59,13 @@ class LocalStorageVideoProviderSettingsRepository implements VideoProviderSettin
   }
 
   async save(settings: VideoProviderSettings): Promise<VideoProviderSettings> {
-    try {
-      window.localStorage.setItem(this.storageKey, JSON.stringify(settings));
-      return settings;
-    } catch (error) {
-      console.error("プロバイダー設定の保存に失敗しました。", error);
-      throw new Error(
-        "設定を保存できませんでした。ブラウザのストレージ容量やプライベートモード設定をご確認ください。",
-      );
-    }
+    writeJsonOrThrow(
+      this.storageKey,
+      settings,
+      "プロバイダー設定の保存に失敗しました。",
+      "設定を保存できませんでした。ブラウザのストレージ容量やプライベートモード設定をご確認ください。",
+    );
+    return settings;
   }
 }
 

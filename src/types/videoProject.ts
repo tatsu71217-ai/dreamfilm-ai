@@ -1,14 +1,6 @@
 /**
- * 動画プロジェクト（1本の夢映像の設計図）の型定義。
- *
- * `VideoProject` は「どう描けば動画になるか」が完全に確定した状態であり、
- * これさえあればレンダラーは外部通信なしで映像を再現できる。
- * 保存しておけば再生成・再編集ができる。
+ * 動画の尺・解像度など、動画プロジェクト共通の型・定数定義。
  */
-
-import type { AudioAsset } from "@/types/asset";
-import type { DreamScene, SubtitleTrack } from "@/types/scene";
-import type { AudioProfile, StyleId } from "@/types/style";
 
 /** ユーザーが選択できる動画の尺 */
 export type VideoDurationSeconds = 15 | 20 | 30;
@@ -42,28 +34,3 @@ export interface VideoResolution {
 export const DEFAULT_VIDEO_RESOLUTION: VideoResolution = { width: 720, height: 1280 };
 
 export const DEFAULT_VIDEO_FPS = 30;
-
-export interface VideoProject {
-  id: string;
-  dreamId: string;
-  styleId: StyleId;
-  durationSeconds: VideoDurationSeconds;
-  resolution: VideoResolution;
-  fps: number;
-  scenes: DreamScene[];
-  subtitleTrack: SubtitleTrack;
-  /** 手続き生成BGMの設定 */
-  audio: AudioProfile;
-  /** 効果音（シーン切り替え等） */
-  soundEffects: AudioAsset[];
-  createdAt: string;
-}
-
-/** 動画尺に対して妥当なシーン数か検証する（分割ロジックの自己点検用） */
-export function isValidSceneCount(
-  sceneCount: number,
-  duration: VideoDurationSeconds,
-): boolean {
-  const range = SCENE_COUNT_RANGE[duration];
-  return sceneCount >= range.min && sceneCount <= range.max;
-}

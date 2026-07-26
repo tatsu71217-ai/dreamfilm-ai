@@ -1,3 +1,4 @@
+import { readJsonArray, writeJsonOrThrow } from "@/data/localStorageJson";
 import {
   RENDER_JOBS_STORAGE_KEY,
   type CreateRenderJobInput,
@@ -31,34 +32,20 @@ class LocalStorageRenderJobRepository implements RenderJobRepository {
   private readonly storageKey = RENDER_JOBS_STORAGE_KEY;
 
   private readAll(): RenderJob[] {
-    try {
-      const raw = window.localStorage.getItem(this.storageKey);
-      if (!raw) {
-        return [];
-      }
-      const parsed: unknown = JSON.parse(raw);
-      if (!Array.isArray(parsed)) {
-        console.warn(
-          "保存されたレンダリングジョブの形式が不正なため、空の状態として扱います。",
-        );
-        return [];
-      }
-      return parsed as RenderJob[];
-    } catch (error) {
-      console.error("レンダリングジョブの読み込みに失敗しました。", error);
-      return [];
-    }
+    return readJsonArray<RenderJob>(
+      this.storageKey,
+      "保存されたレンダリングジョブの形式が不正なため、空の状態として扱います。",
+      "レンダリングジョブの読み込みに失敗しました。",
+    );
   }
 
   private writeAll(jobs: RenderJob[]): void {
-    try {
-      window.localStorage.setItem(this.storageKey, JSON.stringify(jobs));
-    } catch (error) {
-      console.error("レンダリングジョブの保存に失敗しました。", error);
-      throw new Error(
-        "レンダリングジョブを保存できませんでした。ブラウザのストレージ容量をご確認ください。",
-      );
-    }
+    writeJsonOrThrow(
+      this.storageKey,
+      jobs,
+      "レンダリングジョブの保存に失敗しました。",
+      "レンダリングジョブを保存できませんでした。ブラウザのストレージ容量をご確認ください。",
+    );
   }
 
   async list(): Promise<RenderJob[]> {

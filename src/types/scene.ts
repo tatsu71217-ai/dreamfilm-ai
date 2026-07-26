@@ -109,8 +109,3 @@ export interface DreamScene {
   /** このシーンの元になった夢の一文。再編集時の手がかりとして保持する */
   sourceText: string;
 }
-
-/** シーンの尺（秒） */
-export function sceneDuration(scene: DreamScene): number {
-  return scene.endTime - scene.startTime;
-}

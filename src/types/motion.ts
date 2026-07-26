@@ -4,14 +4,3 @@
  * （見た目の違いは CharacterAsset.variant 側で表現し、動きの質はここで一元管理する）。
  */
 export type MotionId = "walk" | "run" | "jump" | "turn" | "idle" | "float" | "fly" | "swim";
-
-export const MOTION_IDS: readonly MotionId[] = [
-  "walk",
-  "run",
-  "jump",
-  "turn",
-  "idle",
-  "float",
-  "fly",
-  "swim",
-];

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Moon, Sun, Info, FileText, ShieldCheck, Film } from "lucide-react";
+import { Moon, Sun, Info, FileText, ShieldCheck, Film, HardDrive } from "lucide-react";
 import { PageHeader } from "@/components/common/PageHeader";
 import { SettingsRow } from "@/components/common/SettingsRow";
 import { Switch } from "@/components/ui/switch";
@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { VideoProviderSettingsCard } from "@/components/common/VideoProviderSettingsCard";
+import { getStorageUsageEstimate } from "@/data/videoBlobStore";
 import { useTheme } from "@/hooks/useTheme";
 
 const APP_VERSION = "0.1.0";
@@ -41,7 +42,20 @@ const INFO_DIALOG_CONTENT: Record<
 export function SettingsPage() {
   const { theme, toggleTheme } = useTheme();
   const [openDialog, setOpenDialog] = React.useState<InfoDialogKey>(null);
+  const [storageUsage, setStorageUsage] = React.useState<{ usageMB: number; quotaMB: number } | null>(
+    null,
+  );
   const isDark = theme === "dark";
+
+  React.useEffect(() => {
+    let isMounted = true;
+    getStorageUsageEstimate().then((estimate) => {
+      if (isMounted) setStorageUsage(estimate);
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <div className="flex min-h-dvh flex-col">
@@ -89,6 +103,13 @@ export function SettingsPage() {
             description="動画生成（Render）ジョブの履歴を見る"
             to="/render-history"
           />
+          {storageUsage ? (
+            <SettingsRow
+              icon={<HardDrive className="h-4 w-4" aria-hidden="true" />}
+              label="端末の使用容量"
+              description={`保存済みの動画など: 約${storageUsage.usageMB}MB / 上限約${storageUsage.quotaMB}MB`}
+            />
+          ) : null}
         </section>
 
         <section className="flex flex-col gap-3" aria-labelledby="about-heading">

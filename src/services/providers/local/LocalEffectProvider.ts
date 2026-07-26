@@ -2,6 +2,7 @@ import type { EffectProvider } from "@/services/providers/types";
 import type { RenderContext } from "@/services/render/engine/types";
 import type { EffectAsset } from "@/types/asset";
 import type { EffectKind } from "@/types/scene";
+import { parseHexColor } from "@/utils/color";
 
 /**
  * 1つのエフェクトを描く関数。EffectProvider本体はこれをレジストリから引くだけで、
@@ -254,10 +255,7 @@ registerEffect("speed-lines", (ctx, asset, width, height, t) => {
 });
 
 function hexToRgba(hex: string, alpha: number): string {
-  const normalized = hex.replace("#", "");
-  const r = parseInt(normalized.slice(0, 2), 16);
-  const g = parseInt(normalized.slice(2, 4), 16);
-  const b = parseInt(normalized.slice(4, 6), 16);
+  const { r, g, b } = parseHexColor(hex);
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 

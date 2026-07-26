@@ -1,3 +1,4 @@
+import { readJsonArray, writeJsonOrThrow } from "@/data/localStorageJson";
 import {
   DREAMS_STORAGE_KEY,
   type CreateDreamInput,
@@ -64,36 +65,25 @@ class LocalStorageDreamRepository implements DreamRepository {
   private readonly storageKey = DREAMS_STORAGE_KEY;
 
   private readAll(): Dream[] {
-    try {
-      const raw = window.localStorage.getItem(this.storageKey);
-      if (!raw) {
-        return [];
-      }
-      const parsed: unknown = JSON.parse(raw);
-      if (!Array.isArray(parsed)) {
-        console.warn("保存された夢データの形式が不正なため、空の状態として扱います。");
-        return [];
-      }
-      // 過去に保存されたMood値が現行のMood型と異なる場合に備えて正規化する
-      return (parsed as Dream[]).map((dream) => ({
-        ...dream,
-        mood: normalizeMood(dream.mood),
-      }));
-    } catch (error) {
-      console.error("夢データの読み込みに失敗しました。", error);
-      return [];
-    }
+    const parsed = readJsonArray<Dream>(
+      this.storageKey,
+      "保存された夢データの形式が不正なため、空の状態として扱います。",
+      "夢データの読み込みに失敗しました。",
+    );
+    // 過去に保存されたMood値が現行のMood型と異なる場合に備えて正規化する
+    return parsed.map((dream) => ({
+      ...dream,
+      mood: normalizeMood(dream.mood),
+    }));
   }
 
   private writeAll(dreams: Dream[]): void {
-    try {
-      window.localStorage.setItem(this.storageKey, JSON.stringify(dreams));
-    } catch (error) {
-      console.error("夢データの保存に失敗しました。", error);
-      throw new Error(
-        "夢を保存できませんでした。ブラウザのストレージ容量やプライベートモード設定をご確認ください。",
-      );
-    }
+    writeJsonOrThrow(
+      this.storageKey,
+      dreams,
+      "夢データの保存に失敗しました。",
+      "夢を保存できませんでした。ブラウザのストレージ容量やプライベートモード設定をご確認ください。",
+    );
   }
 
   async list(): Promise<Dream[]> {

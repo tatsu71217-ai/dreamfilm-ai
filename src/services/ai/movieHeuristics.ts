@@ -11,6 +11,7 @@ import type {
   DreamMovieScene,
   DreamOrganizationResult,
 } from "@/services/ai/types";
+import { distributeEvenly } from "@/utils/math";
 
 /**
  * MockAIProvider.generateMoviePackage が使用する、簡易的な構成ロジック集。
@@ -125,7 +126,5 @@ function buildScenes(params: {
 
 /** 30秒を均等に分配する（端数は前方のシーンに割り振り、合計が必ず30秒になるようにする） */
 function distributeSeconds(sceneCount: number): number[] {
-  const base = Math.floor(MOVIE_DURATION_SECONDS / sceneCount);
-  const remainder = MOVIE_DURATION_SECONDS - base * sceneCount;
-  return Array.from({ length: sceneCount }, (_, index) => base + (index < remainder ? 1 : 0));
+  return distributeEvenly(MOVIE_DURATION_SECONDS, sceneCount);
 }
