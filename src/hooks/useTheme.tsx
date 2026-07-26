@@ -54,6 +54,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components -- Provider and its consumer hook are intentionally colocated
 export function useTheme(): ThemeContextValue {
   const context = React.useContext(ThemeContext);
   if (!context) {

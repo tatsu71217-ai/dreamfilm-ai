@@ -1,4 +1,4 @@
-import { CloudCheck } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 
 interface AutoSaveIndicatorProps {
   lastAutoSavedAt: string | null;
@@ -22,7 +22,7 @@ export function AutoSaveIndicator({ lastAutoSavedAt }: AutoSaveIndicatorProps) {
 
   return (
     <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-      <CloudCheck className="h-3.5 w-3.5" aria-hidden="true" />
+      <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
       下書きを自動保存しました（{time}）
     </p>
   );

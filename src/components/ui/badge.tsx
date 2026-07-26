@@ -27,4 +27,5 @@ function Badge({ className, variant, ...props }: BadgeProps) {
   return <span className={cn(badgeVariants({ variant, className }))} {...props} />;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components -- shadcn/ui convention: co-locate the cva variants with the component
 export { Badge, badgeVariants };

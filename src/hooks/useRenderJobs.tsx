@@ -109,6 +109,7 @@ export function RenderJobsProvider({ children }: { children: React.ReactNode }) 
   return <RenderJobsContext.Provider value={value}>{children}</RenderJobsContext.Provider>;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components -- Provider and its consumer hook are intentionally colocated
 export function useRenderJobs(): RenderJobsContextValue {
   const context = React.useContext(RenderJobsContext);
   if (!context) {

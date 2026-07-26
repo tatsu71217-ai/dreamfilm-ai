@@ -113,6 +113,7 @@ export function DreamsProvider({ children }: { children: React.ReactNode }) {
   return <DreamsContext.Provider value={value}>{children}</DreamsContext.Provider>;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components -- Provider and its consumer hook are intentionally colocated
 export function useDreams(): DreamsContextValue {
   const context = React.useContext(DreamsContext);
   if (!context) {

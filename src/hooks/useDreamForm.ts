@@ -50,7 +50,6 @@ export function useDreamForm({ draftKey, initialValues }: UseDreamFormOptions) {
       setIsDraftRestored(true);
       setLastAutoSavedAt(draft.savedAt);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [draftKey]);
 
   // 入力が落ち着いてから自動保存する（デバウンス）。

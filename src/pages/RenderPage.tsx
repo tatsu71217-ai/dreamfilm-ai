@@ -95,6 +95,10 @@ export function RenderPage() {
     return () => {
       isCancelled = true;
     };
+    // job is intentionally narrowed to its relevant fields: it changes identity on every
+    // polling tick (progress updates), and re-resolving the playable URL only needs to run
+    // when status/outputUrl/provider actually change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [job?.status, job?.outputUrl, job?.provider]);
 
   const handleCancel = async () => {
