@@ -1,0 +1,130 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/**
+ * カラートークン (HSL)
+ * :root  = ライトモード（劇場のプログラム用紙のような温かい生成り色）
+ * .dark  = ダークモード（劇場の暗闇。本アプリの既定テーマ）
+ *
+ * shadcn/ui の慣例に従い、コンポーネント側は bg-background / text-foreground のような
+ * 意味的トークンのみを参照する。実際の色はここでのみ管理し、配色変更時はこのファイルだけを触ればよい。
+ */
+@layer base {
+  :root {
+    --background: 40 35% 95%;
+    --foreground: 25 25% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 25 25% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 25 25% 12%;
+
+    --primary: 38 55% 52%;
+    --primary-foreground: 30 40% 10%;
+
+    --secondary: 40 22% 90%;
+    --secondary-foreground: 25 20% 15%;
+
+    --muted: 40 22% 90%;
+    --muted-foreground: 30 10% 40%;
+
+    --accent: 4 45% 43%;
+    --accent-foreground: 40 35% 97%;
+
+    --destructive: 4 60% 45%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 35 25% 85%;
+    --input: 35 25% 85%;
+    --ring: 38 55% 52%;
+
+    --radius: 1rem;
+  }
+
+  .dark {
+    --background: 260 6% 5%;
+    --foreground: 35 30% 92%;
+
+    --card: 260 7% 9%;
+    --card-foreground: 35 30% 92%;
+
+    --popover: 260 8% 8%;
+    --popover-foreground: 35 30% 92%;
+
+    --primary: 38 55% 60%;
+    --primary-foreground: 30 45% 10%;
+
+    --secondary: 260 6% 14%;
+    --secondary-foreground: 35 20% 85%;
+
+    --muted: 260 6% 14%;
+    --muted-foreground: 30 8% 62%;
+
+    --accent: 4 40% 42%;
+    --accent-foreground: 35 30% 96%;
+
+    --destructive: 4 55% 50%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 260 7% 18%;
+    --input: 260 7% 18%;
+    --ring: 38 55% 60%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    color-scheme: dark;
+  }
+
+  html.light {
+    color-scheme: light;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+    text-rendering: optimizeLegibility;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* キーボード操作時のフォーカスリングを明示する（アクセシビリティ） */
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+
+  ::selection {
+    @apply bg-gold/30 text-foreground;
+  }
+}
+
+@layer utilities {
+  /* モバイルのホームインジケーター/ノッチに合わせた安全領域パディング */
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
