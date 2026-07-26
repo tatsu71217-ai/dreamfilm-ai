@@ -1,6 +1,11 @@
+import {
+  applyCameraTransform,
+  computeCameraTransform,
+  scaleForParallaxBackground,
+} from "@/services/render/cameraEngine";
 import type { DreamScene } from "@/types/scene";
 
-/** 1シーンをCanvasへ描画する（現時点は背景グラデーション＋キャラ図形のみの最小実装） */
+/** 1シーンをCanvasへ描画する */
 export function drawScene(
   ctx: CanvasRenderingContext2D,
   scene: DreamScene,
@@ -8,17 +13,23 @@ export function drawScene(
   height: number,
   tSeconds: number,
 ): void {
+  const duration = Math.max(0.001, scene.endTime - scene.startTime);
+  const progress = tSeconds / duration;
+  const cameraTransform = computeCameraTransform(scene.cameraMotion, progress, width, height);
+
+  // 背景レイヤー（視差のため前景より控えめに動かす）
+  ctx.save();
+  applyCameraTransform(ctx, scaleForParallaxBackground(cameraTransform), width, height);
   const gradient = ctx.createLinearGradient(0, 0, 0, height);
   gradient.addColorStop(0, scene.background.colorFrom);
   gradient.addColorStop(1, scene.background.colorTo);
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, width, height);
+  ctx.restore();
 
-  const zoom = 1 + 0.05 * (tSeconds / Math.max(0.001, scene.endTime - scene.startTime));
+  // 前景レイヤー（キャラクター）
   ctx.save();
-  ctx.translate(width / 2, height / 2);
-  ctx.scale(zoom, zoom);
-  ctx.translate(-width / 2, -height / 2);
+  applyCameraTransform(ctx, cameraTransform, width, height);
 
   for (const character of scene.characters) {
     ctx.fillStyle = character.color;

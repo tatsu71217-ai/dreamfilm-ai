@@ -215,7 +215,7 @@ export const STYLE_PRESETS: Record<StyleId, StylePreset> = {
       accent: "#FF8FC5",
     },
     pacing: "normal",
-    cameraMotions: ["drift", "zoom-out", "still"],
+    cameraMotions: ["drift", "zoom-out", "still", "rotate"],
     transitions: ["fade", "crossfade", "slide"],
     effects: ["sparkle", "bokeh"],
     subtitle: {
@@ -251,7 +251,7 @@ export const STYLE_PRESETS: Record<StyleId, StylePreset> = {
       accent: "#FFE9B0",
     },
     pacing: "slow",
-    cameraMotions: ["zoom-in", "drift", "pan-up"],
+    cameraMotions: ["zoom-in", "drift", "pan-up", "parallax"],
     transitions: ["crossfade", "fade"],
     effects: ["light-rays", "bokeh", "sparkle"],
     subtitle: {

@@ -29,7 +29,11 @@ export type CameraMotion =
   /** ゆっくり漂うような複合移動 */
   | "drift"
   /** 小刻みな揺れ（ホラー等） */
-  | "shake";
+  | "shake"
+  /** わずかな回転 */
+  | "rotate"
+  /** 背景と前景で速度差をつけた水平移動 */
+  | "parallax";
 
 /** シーン間のつなぎ */
 export type TransitionKind =
