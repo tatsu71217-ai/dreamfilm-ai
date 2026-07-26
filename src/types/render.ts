@@ -12,14 +12,14 @@ export const RENDER_STATUS_LABEL: Record<RenderStatus, string> = {
   cancelled: "キャンセル済み",
 };
 
-/** UI表示用のプロバイダーラベル。"mock" 以外は未実装だが、表示用に一通り定義しておく */
+/**
+ * UI表示用のプロバイダーラベル。
+ * "mock" は本番では選択できないが、過去に作成された履歴の表示に必要なため残している。
+ */
 export const VIDEO_PROVIDER_LABEL: Record<VideoProviderId, string> = {
-  mock: "Mock Provider",
-  runway: "Runway",
-  veo: "Veo",
-  kling: "Kling",
-  pika: "Pika",
-  luma: "Luma",
+  pollinations: "Pollinations",
+  veo: "Google Veo",
+  mock: "Mock Provider（開発用）",
 };
 
 /** LocalStorage 保存キー（RenderJob一覧。Render履歴画面もこのデータを一覧表示する） */

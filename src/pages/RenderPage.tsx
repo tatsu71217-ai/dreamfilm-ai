@@ -18,7 +18,10 @@ import {
 } from "@/components/ui/dialog";
 import { useDreams } from "@/hooks/useDreams";
 import { useRenderJobs } from "@/hooks/useRenderJobs";
-import { resolvePlayableVideoUrl } from "@/services/video/resolvePlayableVideoUrl";
+import {
+  releasePlayableVideoUrl,
+  resolvePlayableVideoUrl,
+} from "@/services/video/resolvePlayableVideoUrl";
 import { VIDEO_PROVIDER_LABEL, type RenderJob } from "@/types/render";
 import { formatDateLongJP } from "@/utils/date";
 import { saveVideoToDevice, shareVideo } from "@/utils/videoActions";
@@ -83,10 +86,18 @@ export function RenderPage() {
 
   React.useEffect(() => {
     let isCancelled = false;
+    // 解決結果が Object URL の場合、解放しないとメモリリークになるため必ず控えておく
+    let resolvedUrl: string | null = null;
 
     if (job?.status === "completed" && job.outputUrl) {
       resolvePlayableVideoUrl(job).then((url) => {
-        if (!isCancelled) setPlayableVideoUrl(url);
+        if (isCancelled) {
+          // 解決が終わる前にアンマウント/再実行された場合は、その場で捨てる
+          releasePlayableVideoUrl(url);
+          return;
+        }
+        resolvedUrl = url;
+        setPlayableVideoUrl(url);
       });
     } else {
       setPlayableVideoUrl(null);
@@ -94,12 +105,12 @@ export function RenderPage() {
 
     return () => {
       isCancelled = true;
+      releasePlayableVideoUrl(resolvedUrl);
     };
-    // job is intentionally narrowed to its relevant fields: it changes identity on every
-    // polling tick (progress updates), and re-resolving the playable URL only needs to run
-    // when status/outputUrl/provider actually change.
+    // job は進捗更新のたびに新しいオブジェクトになるため、再生URLの解決に関係する
+    // フィールドだけを依存に取る（毎tickでObject URLを作り直さないため）。
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [job?.status, job?.outputUrl, job?.provider]);
+  }, [job?.id, job?.status, job?.outputUrl]);
 
   const handleCancel = async () => {
     if (!job) return;

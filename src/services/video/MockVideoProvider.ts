@@ -39,15 +39,14 @@ const SIMULATION_STEPS: ReadonlyArray<{
 ];
 
 /**
- * 実動画生成は行わないモック実装。
+ * 実動画生成は行わないモック実装。**開発専用。**
  *
- * WORK_ORDER (Sprint6) の「Waiting→Preparing→Rendering→Completed」という状態遷移と、
- * 「疑似的にProgressが更新されること」という要件に対応する。`VideoProvider` interfaceのみに
- * 依存する形で実装しており、将来 実プロバイダーへ差し替える際は services/video/index.ts の
- * 1行を変更するだけで済む。
+ * 実プロバイダー（Pollinations / Google Veo）の導入に伴い、本番ビルドでは提供しない。
+ * `VideoProviderFactory.isMockProviderAvailable` (= `import.meta.env.DEV`) でガードしており、
+ * 本番バンドルからはこのファイルごとツリーシェイクされる。
  *
- * Sprint8より、完了時に `MOCK_VIDEO_URL`（公開テスト動画）を outputUrl として返すようにし、
- * 動画プレビュー・保存・共有機能をMockのみで動作確認できるようにした。
+ * 開発時にAPIキーや課金なしでRenderパイプライン全体（状態遷移・進捗・プレビュー・保存・共有）を
+ * 動かすために残している。完了時は `MOCK_VIDEO_URL`（公開テスト動画）を outputUrl として返す。
  */
 export class MockVideoProvider implements VideoProvider {
   readonly id: VideoProviderId = "mock";

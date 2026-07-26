@@ -193,8 +193,8 @@ export function DreamMoviePage() {
         {dream.moviePackage ? (
           <div className="flex flex-col gap-2 rounded-xl border border-gold/30 bg-gold/5 p-4">
             <p className="text-sm text-muted-foreground">
-              保存済みのMovie Packageから、動画生成（Render）を開始できます。
-              ※Sprint6では実際の動画は生成されません（Render Pipelineの基盤のみ構築）。
+              保存済みのMovie Packageから、実際のショートムービーを生成します。
+              生成には数分かかることがあります。動画生成プロバイダーとAPIキーは設定画面で変更できます。
             </p>
             {renderError ? (
               <p role="alert" className="text-sm text-destructive">

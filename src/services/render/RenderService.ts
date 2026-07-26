@@ -52,7 +52,9 @@ class DefaultRenderService implements RenderService {
   async startRender({ dream, moviePackage, onUpdate }: StartRenderParams): Promise<RenderJob> {
     const settings = await this.videoProviderSettingsRepository.get();
     const provider = this.videoProviderFactory.create(settings.selectedProvider, {
-      apiKey: settings.googleVeoApiKey,
+      googleVeoApiKey: settings.googleVeoApiKey,
+      pollinationsApiKey: settings.pollinationsApiKey,
+      pollinationsModel: settings.pollinationsModel,
     });
 
     const now = new Date().toISOString();

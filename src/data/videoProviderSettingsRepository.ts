@@ -1,8 +1,37 @@
+import { isMockProviderAvailable } from "@/services/video/VideoProviderFactory";
 import {
   DEFAULT_VIDEO_PROVIDER_SETTINGS,
+  SELECTABLE_VIDEO_PROVIDERS,
   VIDEO_PROVIDER_SETTINGS_STORAGE_KEY,
   type VideoProviderSettings,
 } from "@/types/videoProviderSettings";
+
+/**
+ * 保存済み設定を、現在のビルドで有効な値へ寄せる。
+ *
+ * Mockプロバイダーを本番から外したため、以前 "mock" を選んでいたユーザーの設定が
+ * そのまま残っていると、動画生成のたびにFactoryがエラーになってしまう。
+ * 読み出し時に既定のプロバイダーへ移行させることで、設定画面を触らなくても復帰できるようにする。
+ */
+function normalizeSettings(settings: VideoProviderSettings): VideoProviderSettings {
+  const isSelectable = SELECTABLE_VIDEO_PROVIDERS.includes(settings.selectedProvider);
+  if (isSelectable) {
+    return settings;
+  }
+
+  if (settings.selectedProvider === "mock" && !isMockProviderAvailable) {
+    return {
+      ...settings,
+      selectedProvider: DEFAULT_VIDEO_PROVIDER_SETTINGS.selectedProvider,
+    };
+  }
+
+  // 過去に型だけ存在した runway/kling/pika/luma 等、現在は解決できない値も既定へ戻す
+  return {
+    ...settings,
+    selectedProvider: DEFAULT_VIDEO_PROVIDER_SETTINGS.selectedProvider,
+  };
+}
 
 /**
  * Provider設定・APIキー設定へのアクセスを抽象化するリポジトリインターフェース。
@@ -24,7 +53,7 @@ class LocalStorageVideoProviderSettingsRepository implements VideoProviderSettin
       }
       const parsed = JSON.parse(raw) as Partial<VideoProviderSettings>;
       // 将来フィールドが増えた場合でも、欠けている項目はデフォルト値で補う
-      return { ...DEFAULT_VIDEO_PROVIDER_SETTINGS, ...parsed };
+      return normalizeSettings({ ...DEFAULT_VIDEO_PROVIDER_SETTINGS, ...parsed });
     } catch (error) {
       console.error("プロバイダー設定の読み込みに失敗しました。", error);
       return { ...DEFAULT_VIDEO_PROVIDER_SETTINGS };

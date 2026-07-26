@@ -1,5 +1,6 @@
 import * as React from "react";
 import { renderJobRepository } from "@/data/renderJobRepository";
+import { videoBlobStore } from "@/data/videoBlobStore";
 import { renderService } from "@/services/render";
 import type { Dream } from "@/types/dream";
 import type { DreamMoviePackage } from "@/types/movie";
@@ -80,6 +81,8 @@ export function RenderJobsProvider({ children }: { children: React.ReactNode }) 
 
   const removeJob = React.useCallback(async (jobId: string) => {
     await renderJobRepository.remove(jobId);
+    // 履歴を消したら動画本体（IndexedDB）も破棄する。残すと参照されないまま容量を食い続ける
+    await videoBlobStore.remove(jobId);
     setJobs((prev) => prev.filter((job) => job.id !== jobId));
   }, []);
 
