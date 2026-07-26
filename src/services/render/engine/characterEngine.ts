@@ -1,12 +1,17 @@
-import { applyCameraTransform, computeCameraTransform } from "@/services/render/cameraEngine";
+import {
+  applyCameraTransform,
+  computeCameraTransform,
+  scaleTransformIntensity,
+} from "@/services/render/cameraEngine";
 import type { RenderContext, RenderEngine } from "@/services/render/engine/types";
 
 /** キャラクター（シルエット/図形）を描く。カメラの動きをそのまま適用する */
 export const characterEngine: RenderEngine = {
   name: "character",
   stage: "midground",
-  render({ ctx, scene, width, height, progress }: RenderContext) {
-    const transform = computeCameraTransform(scene.cameraMotion, progress, width, height);
+  render({ ctx, scene, width, height, progress, emotion }: RenderContext) {
+    const base = computeCameraTransform(scene.cameraMotion, progress, width, height);
+    const transform = scaleTransformIntensity(base, emotion.cameraIntensity);
     applyCameraTransform(ctx, transform, width, height);
 
     for (const character of scene.characters) {

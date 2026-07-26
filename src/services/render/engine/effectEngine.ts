@@ -264,12 +264,16 @@ function hexToRgba(hex: string, alpha: number): string {
 export const effectEngine: RenderEngine = {
   name: "effect",
   stage: "foreground",
-  render({ ctx, scene, width, height, tSeconds }: RenderContext) {
+  render({ ctx, scene, width, height, tSeconds, emotion }: RenderContext) {
     for (const effect of scene.effects) {
       const renderer = registry.get(effect.variant);
       if (!renderer) continue;
+      const scaledEffect = {
+        ...effect,
+        intensity: Math.max(0, Math.min(1, effect.intensity * emotion.effectIntensity)),
+      };
       ctx.save();
-      renderer(ctx, effect, width, height, tSeconds);
+      renderer(ctx, scaledEffect, width, height, tSeconds);
       ctx.restore();
     }
   },

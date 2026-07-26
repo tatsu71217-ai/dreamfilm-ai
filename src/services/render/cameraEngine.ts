@@ -65,6 +65,19 @@ export function computeCameraTransform(
   }
 }
 
+/** EmotionEngineが出した倍率で、変換の量そのもの（identityからの差分）を強め/弱める */
+export function scaleTransformIntensity(
+  transform: CameraTransform,
+  intensity: number,
+): CameraTransform {
+  return {
+    scale: 1 + (transform.scale - 1) * intensity,
+    translateX: transform.translateX * intensity,
+    translateY: transform.translateY * intensity,
+    rotate: transform.rotate * intensity,
+  };
+}
+
 /** 背景レイヤー用に、前景の変換を控えめにスケールする（視差効果） */
 export function scaleForParallaxBackground(transform: CameraTransform): CameraTransform {
   return {

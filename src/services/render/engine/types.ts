@@ -9,6 +9,7 @@
  * EffectEngineへの登録だけで拡張できる（100種類以上の演出を見込んだ設計）。
  */
 
+import type { EmotionProfile } from "@/services/render/engine/emotionEngine";
 import type { DreamScene } from "@/types/scene";
 
 /** 1フレームぶんの描画に必要な情報 */
@@ -21,6 +22,8 @@ export interface RenderContext {
   tSeconds: number;
   /** シーン内での経過割合 0〜1 */
   progress: number;
+  /** EmotionEngineが算出した、このシーンの演出パラメータ */
+  emotion: EmotionProfile;
 }
 
 /**
