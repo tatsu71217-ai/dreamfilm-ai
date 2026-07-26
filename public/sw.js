@@ -1,17 +1,17 @@
 /**
  * DreamFilm AI Service Worker
  *
- * WORK_ORDER (Sprint9) の要件に対応する:
  *  - アプリシェルキャッシュ / 静的ファイルキャッシュ / オフライン起動
  *  - 更新検知（新しいSWが待機中になったらクライアントへ通知できるようにする）
  *
- * ビルドごとにファイル名が変わるJS/CSSバンドル（/assets/*-[hash].js 等）は
- * 事前キャッシュ（precache）の対象に含めず、fetchイベントでのランタイムキャッシュに委ねている。
- * そのため「一度もオンラインでアプリを開いたことがない状態からの完全オフライン起動」はできないが、
- * 一度オンラインでアプリシェルを読み込んだ後は、オフラインでも起動できる（PWAとして一般的な挙動）。
+ * CACHE_VERSION と EXTRA_PRECACHE_URLS は `npm run build` の scripts/generate-sw-precache.mjs
+ * によって、ビルドごとに実際のハッシュ付きJS/CSSバンドル一覧と一意なビルドIDへ書き換えられる
+ * （このファイル自体は書き換え前でも有効なJSとして動作し、その場合は従来通りランタイム
+ *  キャッシュのみに委ねる）。ハッシュ付きバンドルも事前キャッシュすることで、デプロイ直後の
+ * 初回インストール時点から、そのビルドのオフライン起動が可能になる。
  */
 
-const CACHE_VERSION = "v1";
+const CACHE_VERSION = "dev";
 const SHELL_CACHE = `dreamfilm-ai-shell-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `dreamfilm-ai-runtime-${CACHE_VERSION}`;
 
@@ -27,6 +27,9 @@ const PRECACHE_URLS = [
   "/icons/apple-touch-icon.png",
 ];
 
+/** ビルドごとにファイル名が変わるJS/CSSバンドル。generate-sw-precache.mjsが書き換える */
+const EXTRA_PRECACHE_URLS = [];
+
 /** ランタイムキャッシュの対象とするオリジン（自ドメイン + Googleフォント） */
 const RUNTIME_CACHEABLE_ORIGINS = [
   self.location.origin,
@@ -41,7 +44,7 @@ self.addEventListener("install", (event) => {
   event.waitUntil(
     caches
       .open(SHELL_CACHE)
-      .then((cache) => cache.addAll(PRECACHE_URLS))
+      .then((cache) => cache.addAll(PRECACHE_URLS.concat(EXTRA_PRECACHE_URLS)))
       .then(() => self.skipWaiting())
       .catch((error) => {
         console.error("[SW] アプリシェルの事前キャッシュに失敗しました。", error);

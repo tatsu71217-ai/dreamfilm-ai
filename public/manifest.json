@@ -12,6 +12,20 @@
   "lang": "ja",
   "dir": "ltr",
   "categories": ["lifestyle", "entertainment"],
+  "shortcuts": [
+    {
+      "name": "夢を記録する",
+      "short_name": "記録する",
+      "url": "/record",
+      "description": "見た夢をすぐに記録する"
+    },
+    {
+      "name": "映画の履歴",
+      "short_name": "履歴",
+      "url": "/render-history",
+      "description": "生成した動画の一覧を見る"
+    }
+  ],
   "icons": [
     {
       "src": "/icons/icon-192.png",
