@@ -3,6 +3,7 @@ import { ThemeProvider } from "@/hooks/useTheme";
 import { DreamsProvider } from "@/hooks/useDreams";
 import { RenderJobsProvider } from "@/hooks/useRenderJobs";
 import { AppRouter } from "@/router/AppRouter";
+import { OfflineBanner } from "@/components/common/OfflineBanner";
 import { UpdateAvailableBanner } from "@/components/common/UpdateAvailableBanner";
 
 /**
@@ -12,8 +13,10 @@ import { UpdateAvailableBanner } from "@/components/common/UpdateAvailableBanner
  *   RenderJobsProvider ... レンダリングジョブ。DreamsProviderより内側に置き、
  *                          RenderJob生成時にDreamデータ（moviePackage等）を参照できるようにしている
  *
- * UpdateAvailableBanner ... PWAの更新検知バナー。全画面共通で表示されうるため、
- *                            Router の外側、画面遷移とは独立した位置に配置している
+ * UpdateAvailableBanner / OfflineBanner ... 全画面共通のステータスバナー。
+ * 画面下部のBottomNavigation（layouts/BottomNavigation.tsx）と競合しないよう、
+ * 画面上部に固定した1つのコンテナへまとめて重ねて表示する
+ * （Router の外側、画面遷移とは独立した位置に配置している）
  */
 function App() {
   return (
@@ -21,7 +24,10 @@ function App() {
       <DreamsProvider>
         <RenderJobsProvider>
           <BrowserRouter>
-            <UpdateAvailableBanner />
+            <div className="safe-top fixed inset-x-0 top-0 z-40 flex flex-col">
+              <UpdateAvailableBanner />
+              <OfflineBanner />
+            </div>
             <AppRouter />
           </BrowserRouter>
         </RenderJobsProvider>

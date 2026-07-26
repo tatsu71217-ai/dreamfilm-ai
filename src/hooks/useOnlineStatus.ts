@@ -1,0 +1,22 @@
+import * as React from "react";
+
+/** ブラウザのオンライン/オフライン状態を購読する */
+export function useOnlineStatus(): boolean {
+  const [isOnline, setIsOnline] = React.useState(() =>
+    typeof navigator === "undefined" ? true : navigator.onLine,
+  );
+
+  React.useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
+
+  return isOnline;
+}
