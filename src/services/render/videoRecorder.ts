@@ -1,8 +1,35 @@
 import { drawScene } from "@/services/render/canvasSceneRenderer";
 import type { DreamScene } from "@/types/scene";
 
-/** Canvas描画をMediaRecorderでWebMへキャプチャする（Phase5最小スパイク） */
-export async function renderScenesToWebm(
+/**
+ * MediaRecorderが対応するコンテナ形式を優先順に判定する。
+ *
+ * iPhone/iPad Safari（iOS版含む）は WebM を一切サポートしない
+ * （MediaRecorderでの録画・<video>での再生のいずれも不可）。
+ * 「スマホ優先」「iPhone Safariで再生・保存できること」という要件のため、
+ * ハードコードせずランタイムで対応形式を検出し、Safari系ではMP4(H.264)を使う。
+ */
+const CANDIDATE_MIME_TYPES = [
+  "video/mp4;codecs=avc1",
+  "video/mp4",
+  "video/webm;codecs=vp9",
+  "video/webm;codecs=vp8",
+  "video/webm",
+];
+
+function pickSupportedMimeType(): string {
+  for (const mimeType of CANDIDATE_MIME_TYPES) {
+    if (MediaRecorder.isTypeSupported(mimeType)) {
+      return mimeType;
+    }
+  }
+  throw new Error(
+    "この端末・ブラウザは動画の録画（MediaRecorder）に対応していません。",
+  );
+}
+
+/** Canvas描画をMediaRecorderで録画し、端末が対応する形式（MP4/WebM）の動画Blobを返す */
+export async function renderScenesToVideo(
   scenes: DreamScene[],
   width: number,
   height: number,
@@ -14,9 +41,10 @@ export async function renderScenesToWebm(
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("Canvas 2D コンテキストを取得できませんでした。");
 
+  const mimeType = pickSupportedMimeType();
   const totalSeconds = scenes[scenes.length - 1]?.endTime ?? 0;
   const stream = canvas.captureStream(fps);
-  const recorder = new MediaRecorder(stream, { mimeType: "video/webm;codecs=vp8" });
+  const recorder = new MediaRecorder(stream, { mimeType });
   const chunks: BlobPart[] = [];
   recorder.ondataavailable = (e) => {
     if (e.data.size > 0) chunks.push(e.data);
@@ -38,7 +66,9 @@ export async function renderScenesToWebm(
         resolve();
         return;
       }
-      const scene = scenes.find((s) => elapsedSeconds >= s.startTime && elapsedSeconds < s.endTime) ?? scenes[scenes.length - 1];
+      const scene =
+        scenes.find((s) => elapsedSeconds >= s.startTime && elapsedSeconds < s.endTime) ??
+        scenes[scenes.length - 1];
       drawScene(ctx, scene, width, height, elapsedSeconds - scene.startTime);
       setTimeout(tick, frameIntervalMs);
     };
@@ -48,5 +78,5 @@ export async function renderScenesToWebm(
   recorder.stop();
   await stopped;
 
-  return new Blob(chunks, { type: "video/webm" });
+  return new Blob(chunks, { type: mimeType });
 }
