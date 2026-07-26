@@ -10,6 +10,7 @@ import {
   type VideoProviderStatusSnapshot,
   type VideoRenderInput,
 } from "@/services/video/types";
+import { getStylePreset } from "@/types/style";
 import { DEFAULT_VIDEO_FPS, DEFAULT_VIDEO_RESOLUTION } from "@/types/videoProject";
 
 interface JobState {
@@ -50,7 +51,7 @@ export class LocalCanvasVideoProvider implements VideoProvider {
     local: NonNullable<VideoRenderInput["local"]>,
   ): Promise<void> {
     try {
-      const { scenes } = splitDreamIntoScenes({
+      const { scenes, soundEffects } = splitDreamIntoScenes({
         body: local.body,
         title: local.title,
         mood: local.mood,
@@ -70,6 +71,7 @@ export class LocalCanvasVideoProvider implements VideoProvider {
           const progress = total > 0 ? Math.min(97, Math.round((elapsed / total) * 100)) : 50;
           this.jobs.set(renderJobId, { status: "rendering", progress });
         },
+        { profile: getStylePreset(local.styleId).audio, soundEffects },
       );
 
       if (this.jobs.get(renderJobId)?.status === "cancelled") {

@@ -1,5 +1,8 @@
 import { drawScene } from "@/services/render/canvasSceneRenderer";
+import { createAudioTrack } from "@/services/render/engine/audioEngine";
+import type { AudioAsset } from "@/types/asset";
 import type { DreamScene } from "@/types/scene";
+import type { AudioProfile } from "@/types/style";
 
 /**
  * MediaRecorderが対応するコンテナ形式を優先順に判定する。
@@ -28,13 +31,23 @@ function pickSupportedMimeType(): string {
   );
 }
 
-/** Canvas描画をMediaRecorderで録画し、端末が対応する形式（MP4/WebM）の動画Blobを返す */
+export interface AudioTrackOptions {
+  profile: AudioProfile;
+  soundEffects: AudioAsset[];
+}
+
+/**
+ * Canvas描画をMediaRecorderで録画し、端末が対応する形式（MP4/WebM）の動画Blobを返す。
+ * `audio` を渡すとAudioEngineで合成したBGM/SEを映像トラックと合成して録画する
+ * （省略した場合は無音の動画になる）。
+ */
 export async function renderScenesToVideo(
   scenes: DreamScene[],
   width: number,
   height: number,
   fps: number,
   onProgress?: (elapsedSeconds: number, totalSeconds: number) => void,
+  audio?: AudioTrackOptions,
 ): Promise<Blob> {
   const canvas = document.createElement("canvas");
   canvas.width = width;
@@ -44,8 +57,14 @@ export async function renderScenesToVideo(
 
   const mimeType = pickSupportedMimeType();
   const totalSeconds = scenes[scenes.length - 1]?.endTime ?? 0;
-  const stream = canvas.captureStream(fps);
-  const recorder = new MediaRecorder(stream, { mimeType });
+  const videoStream = canvas.captureStream(fps);
+
+  const audioTrack = audio ? createAudioTrack(audio.profile, audio.soundEffects, totalSeconds) : null;
+  const combinedStream = audioTrack
+    ? new MediaStream([...videoStream.getVideoTracks(), ...audioTrack.stream.getAudioTracks()])
+    : videoStream;
+
+  const recorder = new MediaRecorder(combinedStream, { mimeType });
   const chunks: BlobPart[] = [];
   recorder.ondataavailable = (e) => {
     if (e.data.size > 0) chunks.push(e.data);
@@ -60,24 +79,28 @@ export async function renderScenesToVideo(
   const frameIntervalMs = 1000 / fps;
   const startedAt = performance.now();
 
-  await new Promise<void>((resolve) => {
-    const tick = () => {
-      const elapsedSeconds = (performance.now() - startedAt) / 1000;
-      if (elapsedSeconds >= totalSeconds) {
-        resolve();
-        return;
-      }
-      const scene =
-        scenes.find((s) => elapsedSeconds >= s.startTime && elapsedSeconds < s.endTime) ??
-        scenes[scenes.length - 1];
-      drawScene(ctx, scene, width, height, elapsedSeconds - scene.startTime);
-      onProgress?.(elapsedSeconds, totalSeconds);
-      setTimeout(tick, frameIntervalMs);
-    };
-    tick();
-  });
+  try {
+    await new Promise<void>((resolve) => {
+      const tick = () => {
+        const elapsedSeconds = (performance.now() - startedAt) / 1000;
+        if (elapsedSeconds >= totalSeconds) {
+          resolve();
+          return;
+        }
+        const scene =
+          scenes.find((s) => elapsedSeconds >= s.startTime && elapsedSeconds < s.endTime) ??
+          scenes[scenes.length - 1];
+        drawScene(ctx, scene, width, height, elapsedSeconds - scene.startTime);
+        onProgress?.(elapsedSeconds, totalSeconds);
+        setTimeout(tick, frameIntervalMs);
+      };
+      tick();
+    });
+  } finally {
+    recorder.stop();
+    audioTrack?.stop();
+  }
 
-  recorder.stop();
   await stopped;
 
   return new Blob(chunks, { type: mimeType });
