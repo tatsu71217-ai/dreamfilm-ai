@@ -1,18 +1,16 @@
 import type { RenderUnit } from "@/services/providers/types";
 import type { RenderContext } from "@/services/render/engine/types";
-import { getWorldConfig } from "@/services/world/worldEngine";
 
 /**
- * EmotionEngine（情感）とWorldEngine（スタイルの基調）の明暗・寒暖を合成し、
+ * DirectorEngineが決定した明暗・寒暖(directorCue.lighting)を、
  * 画面全体への光の重ねがけとして表現する後処理ステージ。
+ * Lighting自体はEmotionEngine/WorldEngineを直接呼び出さない。
  */
 export const lightingEngine: RenderUnit = {
   id: "lighting",
   stage: "foreground",
-  draw({ ctx, scene, width, height, emotion }: RenderContext) {
-    const world = getWorldConfig(scene.styleId).baseLighting;
-    const brightness = clamp(-1, 1, emotion.lighting.brightness + world.brightness);
-    const warmth = clamp(-1, 1, emotion.lighting.warmth + world.warmth);
+  draw({ ctx, width, height, directorCue }: RenderContext) {
+    const { brightness, warmth } = directorCue.lighting;
 
     if (Math.abs(brightness) > 0.001) {
       ctx.fillStyle = brightness > 0 ? "#ffffff" : "#000000";
@@ -27,7 +25,3 @@ export const lightingEngine: RenderUnit = {
     }
   },
 };
-
-function clamp(min: number, max: number, value: number): number {
-  return Math.max(min, Math.min(max, value));
-}

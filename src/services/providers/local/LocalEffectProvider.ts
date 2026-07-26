@@ -266,13 +266,13 @@ export const localEffectProvider: EffectProvider = {
   kind: "effect",
   id: "local-effect",
   stage: "foreground",
-  draw({ ctx, scene, width, height, tSeconds, emotion }: RenderContext) {
+  draw({ ctx, scene, width, height, tSeconds, directorCue }: RenderContext) {
     for (const effect of scene.effects) {
       const renderer = registry.get(effect.variant);
       if (!renderer) continue;
       const scaledEffect = {
         ...effect,
-        intensity: Math.max(0, Math.min(1, effect.intensity * emotion.effectIntensity)),
+        intensity: Math.max(0, Math.min(1, effect.intensity * directorCue.effectIntensity)),
       };
       ctx.save();
       renderer(ctx, scaledEffect, width, height, tSeconds);

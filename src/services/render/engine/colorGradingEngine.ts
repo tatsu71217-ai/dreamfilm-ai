@@ -1,18 +1,17 @@
 import type { RenderUnit } from "@/services/providers/types";
 import type { RenderContext } from "@/services/render/engine/types";
-import { getWorldConfig } from "@/services/world/worldEngine";
 
 /**
- * EmotionEngine（情感）とWorldEngine（スタイルの基調）の色調を合成して画面へ適用する後処理ステージ。
+ * DirectorEngineが決定した色調(directorCue.colorGrading)を画面へ適用する後処理ステージ。
  * Canvas 2Dにはピクセル単位の彩度調整APIが無いため、
  * 「彩度を落とす=グレーを重ねる」「ティント=指定色を重ねる」という近似で表現する。
+ * ColorGrading自体はEmotionEngine/WorldEngineを直接呼び出さない。
  */
 export const colorGradingEngine: RenderUnit = {
   id: "color-grading",
   stage: "foreground",
-  draw({ ctx, scene, width, height, emotion }: RenderContext) {
-    const world = getWorldConfig(scene.styleId).baseColorGrading;
-    const saturation = Math.max(0, emotion.colorGrading.saturation * world.saturationMultiplier);
+  draw({ ctx, width, height, directorCue }: RenderContext) {
+    const { saturation, tint, tintStrength, worldTint, worldTintStrength } = directorCue.colorGrading;
 
     if (saturation < 1) {
       ctx.fillStyle = "#808080";
@@ -21,15 +20,14 @@ export const colorGradingEngine: RenderUnit = {
     }
 
     // 情感のティントを優先しつつ、スタイル基調のティントも薄く重ねて世界観を保つ
-    if (emotion.colorGrading.tintStrength > 0.001) {
-      ctx.fillStyle = emotion.colorGrading.tint;
-      ctx.globalAlpha = emotion.colorGrading.tintStrength;
+    if (tintStrength > 0.001) {
+      ctx.fillStyle = tint;
+      ctx.globalAlpha = tintStrength;
       ctx.fillRect(0, 0, width, height);
     }
 
-    const worldTintStrength = Math.max(0, world.tintStrengthBias);
     if (worldTintStrength > 0.001) {
-      ctx.fillStyle = world.tint;
+      ctx.fillStyle = worldTint;
       ctx.globalAlpha = worldTintStrength;
       ctx.fillRect(0, 0, width, height);
     }

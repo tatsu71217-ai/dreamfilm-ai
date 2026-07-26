@@ -1,8 +1,6 @@
-import { providers } from "@/services/providers/registry";
+import type { AudioTrackHandle } from "@/services/render/engine/audioEngine";
 import { drawScene } from "@/services/render/canvasSceneRenderer";
-import type { AudioAsset } from "@/types/asset";
 import type { DreamScene } from "@/types/scene";
-import type { AudioProfile } from "@/types/style";
 
 /**
  * MediaRecorderが対応するコンテナ形式を優先順に判定する。
@@ -31,15 +29,12 @@ function pickSupportedMimeType(): string {
   );
 }
 
-export interface AudioTrackOptions {
-  profile: AudioProfile;
-  soundEffects: AudioAsset[];
-}
-
 /**
  * Canvas描画をMediaRecorderで録画し、端末が対応する形式（MP4/WebM）の動画Blobを返す。
- * `audio` を渡すとAudioEngineで合成したBGM/SEを映像トラックと合成して録画する
- * （省略した場合は無音の動画になる）。
+ *
+ * `audioTrack` を渡すと映像トラックと合成して録画する（省略/nullの場合は無音の動画になる）。
+ * 音声トラックの生成はDirectorEngine.planAudio()の責務であり、videoRecorderは
+ * AudioProviderを直接呼び出さない（既に出来上がったトラックを受け取るだけ）。
  */
 export async function renderScenesToVideo(
   scenes: DreamScene[],
@@ -47,7 +42,7 @@ export async function renderScenesToVideo(
   height: number,
   fps: number,
   onProgress?: (elapsedSeconds: number, totalSeconds: number) => void,
-  audio?: AudioTrackOptions,
+  audioTrack?: AudioTrackHandle | null,
 ): Promise<Blob> {
   const canvas = document.createElement("canvas");
   canvas.width = width;
@@ -59,9 +54,6 @@ export async function renderScenesToVideo(
   const totalSeconds = scenes[scenes.length - 1]?.endTime ?? 0;
   const videoStream = canvas.captureStream(fps);
 
-  const audioTrack = audio
-    ? providers.audio.createTrack(audio.profile, audio.soundEffects, totalSeconds)
-    : null;
   const combinedStream = audioTrack
     ? new MediaStream([...videoStream.getVideoTracks(), ...audioTrack.stream.getAudioTracks()])
     : videoStream;

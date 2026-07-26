@@ -1,7 +1,7 @@
 import type { VideoBlobStore } from "@/data/videoBlobStore";
 import { videoBlobStore as defaultVideoBlobStore } from "@/data/videoBlobStore";
+import { planAudio, planTimeline } from "@/services/director/directorEngine";
 import { renderScenesToVideo } from "@/services/render/videoRecorder";
-import { splitDreamIntoScenes } from "@/services/scene/sceneSplitter";
 import type { VideoProvider } from "@/services/video/VideoProvider";
 import {
   LOCAL_VIDEO_URL_MARKER,
@@ -10,7 +10,6 @@ import {
   type VideoProviderStatusSnapshot,
   type VideoRenderInput,
 } from "@/services/video/types";
-import { getWorldConfig } from "@/services/world/worldEngine";
 import { DEFAULT_VIDEO_FPS, DEFAULT_VIDEO_RESOLUTION } from "@/types/videoProject";
 
 interface JobState {
@@ -51,7 +50,7 @@ export class LocalCanvasVideoProvider implements VideoProvider {
     local: NonNullable<VideoRenderInput["local"]>,
   ): Promise<void> {
     try {
-      const { scenes, soundEffects } = splitDreamIntoScenes({
+      const { scenes, soundEffects } = planTimeline({
         body: local.body,
         title: local.title,
         mood: local.mood,
@@ -60,6 +59,8 @@ export class LocalCanvasVideoProvider implements VideoProvider {
       });
 
       this.jobs.set(renderJobId, { status: "rendering", progress: 1 });
+
+      const audioTrack = planAudio(local.styleId, soundEffects, local.durationSeconds);
 
       const blob = await renderScenesToVideo(
         scenes,
@@ -71,7 +72,7 @@ export class LocalCanvasVideoProvider implements VideoProvider {
           const progress = total > 0 ? Math.min(97, Math.round((elapsed / total) * 100)) : 50;
           this.jobs.set(renderJobId, { status: "rendering", progress });
         },
-        { profile: getWorldConfig(local.styleId).audio, soundEffects },
+        audioTrack,
       );
 
       if (this.jobs.get(renderJobId)?.status === "cancelled") {
