@@ -1,5 +1,5 @@
+import { providers } from "@/services/providers/registry";
 import { drawScene } from "@/services/render/canvasSceneRenderer";
-import { createAudioTrack } from "@/services/render/engine/audioEngine";
 import type { AudioAsset } from "@/types/asset";
 import type { DreamScene } from "@/types/scene";
 import type { AudioProfile } from "@/types/style";
@@ -59,7 +59,9 @@ export async function renderScenesToVideo(
   const totalSeconds = scenes[scenes.length - 1]?.endTime ?? 0;
   const videoStream = canvas.captureStream(fps);
 
-  const audioTrack = audio ? createAudioTrack(audio.profile, audio.soundEffects, totalSeconds) : null;
+  const audioTrack = audio
+    ? providers.audio.createTrack(audio.profile, audio.soundEffects, totalSeconds)
+    : null;
   const combinedStream = audioTrack
     ? new MediaStream([...videoStream.getVideoTracks(), ...audioTrack.stream.getAudioTracks()])
     : videoStream;

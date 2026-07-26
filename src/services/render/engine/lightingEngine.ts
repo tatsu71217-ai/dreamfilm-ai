@@ -1,14 +1,15 @@
-import type { RenderContext, RenderEngine } from "@/services/render/engine/types";
+import type { RenderUnit } from "@/services/providers/types";
+import type { RenderContext } from "@/services/render/engine/types";
 import { getWorldConfig } from "@/services/world/worldEngine";
 
 /**
  * EmotionEngine（情感）とWorldEngine（スタイルの基調）の明暗・寒暖を合成し、
- * 画面全体への光の重ねがけとして表現する。
+ * 画面全体への光の重ねがけとして表現する後処理ステージ。
  */
-export const lightingEngine: RenderEngine = {
-  name: "lighting",
+export const lightingEngine: RenderUnit = {
+  id: "lighting",
   stage: "foreground",
-  render({ ctx, scene, width, height, emotion }: RenderContext) {
+  draw({ ctx, scene, width, height, emotion }: RenderContext) {
     const world = getWorldConfig(scene.styleId).baseLighting;
     const brightness = clamp(-1, 1, emotion.lighting.brightness + world.brightness);
     const warmth = clamp(-1, 1, emotion.lighting.warmth + world.warmth);

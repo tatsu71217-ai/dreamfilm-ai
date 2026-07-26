@@ -1,24 +1,22 @@
-import { backgroundEngine } from "@/services/render/engine/backgroundEngine";
-import { characterEngine } from "@/services/render/engine/characterEngine";
+import { providers } from "@/services/providers/registry";
 import { colorGradingEngine } from "@/services/render/engine/colorGradingEngine";
 import { deriveEmotionProfile } from "@/services/render/engine/emotionEngine";
-import { effectEngine } from "@/services/render/engine/effectEngine";
 import { lightingEngine } from "@/services/render/engine/lightingEngine";
 import { RenderPipeline } from "@/services/render/engine/renderPipeline";
-import { subtitleEngine } from "@/services/render/engine/subtitleEngine";
 import type { DreamScene } from "@/types/scene";
 
 /**
- * RenderEngine本体。Sceneを直接描画せず、各Engineをステージ順に組み合わせるだけの合成役。
- * 新しい演出はEngineの追加、またはEffectEngineへの登録だけで拡張できる。
+ * RenderEngine本体。Sceneを直接描画せず、Provider（背景/キャラ/エフェクト/字幕）と
+ * 後処理ステージ（照明/色調）をステージ順に組み合わせるだけの合成役。
+ * 具体クラスは参照せず、差し替えは services/providers/registry.ts で完結する。
  */
 const pipeline = new RenderPipeline([
-  backgroundEngine,
-  characterEngine,
-  effectEngine,
+  providers.background,
+  providers.character,
+  providers.effect,
   lightingEngine,
   colorGradingEngine,
-  subtitleEngine,
+  providers.subtitle,
 ]);
 
 /** 1シーンをCanvasへ描画する */

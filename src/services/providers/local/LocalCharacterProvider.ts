@@ -1,16 +1,21 @@
+import type { CharacterProvider } from "@/services/providers/types";
 import {
   applyCameraTransform,
   computeCameraTransform,
   scaleTransformIntensity,
 } from "@/services/render/cameraEngine";
-import type { RenderContext, RenderEngine } from "@/services/render/engine/types";
 import { computeMotionOffset } from "@/services/render/engine/motionLibrary";
+import type { RenderContext } from "@/services/render/engine/types";
 
-/** キャラクター（シルエット/図形）を描く。カメラの動きとMotionLibraryのモーションを適用する */
-export const characterEngine: RenderEngine = {
-  name: "character",
+/**
+ * キャラクターをシルエット図形として手続き的に描く既定実装。
+ * カメラ変換の内側で MotionLibrary のモーションオフセットを適用する。
+ */
+export const localCharacterProvider: CharacterProvider = {
+  kind: "character",
+  id: "local-character",
   stage: "midground",
-  render({ ctx, scene, width, height, progress, emotion }: RenderContext) {
+  draw({ ctx, scene, width, height, progress, emotion }: RenderContext) {
     const base = computeCameraTransform(scene.cameraMotion, progress, width, height);
     const transform = scaleTransformIntensity(base, emotion.cameraIntensity);
     applyCameraTransform(ctx, transform, width, height);

@@ -1,9 +1,10 @@
+import type { EffectProvider } from "@/services/providers/types";
+import type { RenderContext } from "@/services/render/engine/types";
 import type { EffectAsset } from "@/types/asset";
 import type { EffectKind } from "@/types/scene";
-import type { RenderContext, RenderEngine } from "@/services/render/engine/types";
 
 /**
- * 1つのエフェクトを描く関数。EffectEngine本体はこれをレジストリから引くだけで、
+ * 1つのエフェクトを描く関数。EffectProvider本体はこれをレジストリから引くだけで、
  * 個々の演出内容を一切知らない。
  */
 type EffectRenderer = (
@@ -261,10 +262,11 @@ function hexToRgba(hex: string, alpha: number): string {
 }
 
 /** シーンに割り当てられたエフェクトを順番に描く。カメラの影響を受けない画面固定オーバーレイ */
-export const effectEngine: RenderEngine = {
-  name: "effect",
+export const localEffectProvider: EffectProvider = {
+  kind: "effect",
+  id: "local-effect",
   stage: "foreground",
-  render({ ctx, scene, width, height, tSeconds, emotion }: RenderContext) {
+  draw({ ctx, scene, width, height, tSeconds, emotion }: RenderContext) {
     for (const effect of scene.effects) {
       const renderer = registry.get(effect.variant);
       if (!renderer) continue;

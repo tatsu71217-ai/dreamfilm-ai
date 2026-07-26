@@ -10,7 +10,7 @@ import {
   type VideoProviderStatusSnapshot,
   type VideoRenderInput,
 } from "@/services/video/types";
-import { getStylePreset } from "@/types/style";
+import { getWorldConfig } from "@/services/world/worldEngine";
 import { DEFAULT_VIDEO_FPS, DEFAULT_VIDEO_RESOLUTION } from "@/types/videoProject";
 
 interface JobState {
@@ -71,7 +71,7 @@ export class LocalCanvasVideoProvider implements VideoProvider {
           const progress = total > 0 ? Math.min(97, Math.round((elapsed / total) * 100)) : 50;
           this.jobs.set(renderJobId, { status: "rendering", progress });
         },
-        { profile: getStylePreset(local.styleId).audio, soundEffects },
+        { profile: getWorldConfig(local.styleId).audio, soundEffects },
       );
 
       if (this.jobs.get(renderJobId)?.status === "cancelled") {

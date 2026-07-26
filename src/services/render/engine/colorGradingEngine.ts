@@ -1,15 +1,16 @@
-import type { RenderContext, RenderEngine } from "@/services/render/engine/types";
+import type { RenderUnit } from "@/services/providers/types";
+import type { RenderContext } from "@/services/render/engine/types";
 import { getWorldConfig } from "@/services/world/worldEngine";
 
 /**
- * EmotionEngine（情感）とWorldEngine（スタイルの基調）の色調を合成して画面へ適用する。
+ * EmotionEngine（情感）とWorldEngine（スタイルの基調）の色調を合成して画面へ適用する後処理ステージ。
  * Canvas 2Dにはピクセル単位の彩度調整APIが無いため、
  * 「彩度を落とす=グレーを重ねる」「ティント=指定色を重ねる」という近似で表現する。
  */
-export const colorGradingEngine: RenderEngine = {
-  name: "color-grading",
+export const colorGradingEngine: RenderUnit = {
+  id: "color-grading",
   stage: "foreground",
-  render({ ctx, scene, width, height, emotion }: RenderContext) {
+  draw({ ctx, scene, width, height, emotion }: RenderContext) {
     const world = getWorldConfig(scene.styleId).baseColorGrading;
     const saturation = Math.max(0, emotion.colorGrading.saturation * world.saturationMultiplier);
 

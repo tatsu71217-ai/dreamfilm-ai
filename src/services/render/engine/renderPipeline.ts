@@ -1,22 +1,23 @@
-import { RENDER_STAGE_ORDER, type RenderContext, type RenderEngine } from "@/services/render/engine/types";
+import type { RenderUnit } from "@/services/providers/types";
+import { RENDER_STAGE_ORDER, type RenderContext } from "@/services/render/engine/types";
 
 /**
- * 登録されたEngine群をステージ順に実行する合成役。
- * RenderPipeline自身は「何を描くか」を一切知らない（Engineの並び替え・実行のみ）。
+ * 登録された描画単位（Provider・後処理ステージ）をステージ順に実行する合成役。
+ * RenderPipeline自身は「何を描くか」を一切知らず、具体クラスも参照しない。
  */
 export class RenderPipeline {
-  private readonly engines: RenderEngine[];
+  private readonly units: RenderUnit[];
 
-  constructor(engines: RenderEngine[]) {
-    this.engines = engines;
+  constructor(units: RenderUnit[]) {
+    this.units = units;
   }
 
   render(context: RenderContext): void {
     for (const stage of RENDER_STAGE_ORDER) {
-      for (const engine of this.engines) {
-        if (engine.stage !== stage) continue;
+      for (const unit of this.units) {
+        if (unit.stage !== stage) continue;
         context.ctx.save();
-        engine.render(context);
+        unit.draw(context);
         context.ctx.restore();
       }
     }

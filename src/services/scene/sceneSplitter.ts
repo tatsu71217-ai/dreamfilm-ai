@@ -7,13 +7,7 @@
  * こちらは「画面に何を描くかを決める」ためのものである点が異なる。
  */
 
-import {
-  buildEffectAssets,
-  getBackgroundFallback,
-  getCharacterDefault,
-  pickCharacterMotion,
-  pickSceneSoundEffect,
-} from "@/services/assets/assetLibrary";
+import { providers } from "@/services/providers/registry";
 import { splitSentences } from "@/services/ai/mockHeuristics";
 import type {
   AudioAsset,
@@ -162,7 +156,7 @@ export function splitDreamIntoScenes(input: SplitScenesInput): SplitScenesResult
       endTime,
       background: buildBackground(sourceText, style, sceneMood),
       characters: buildCharacters(sourceText, style, sceneMood),
-      effects: buildEffectAssets(style.id, sceneMood),
+      effects: providers.asset.buildEffectAssets(style.id, sceneMood),
       cameraMotion: pickCameraMotion(style, sceneMood, index),
       // 先頭シーンは必ずフェードイン。以降はスタイルの傾向から選ぶ
       transitionIn: index === 0 ? "fade" : pickTransition(style, index),
@@ -176,7 +170,7 @@ export function splitDreamIntoScenes(input: SplitScenesInput): SplitScenesResult
     }
     // シーン切り替えのタイミングでSEを鳴らす（先頭シーンは無音で始める）
     if (index > 0) {
-      soundEffects.push(pickSceneSoundEffect(style.id, sceneMood, index, startTime));
+      soundEffects.push(providers.asset.pickSceneSoundEffect(style.id, sceneMood, index, startTime));
     }
   }
 
@@ -304,7 +298,7 @@ function buildBackground(
   const matched = BACKGROUND_KEYWORDS.find((rule) =>
     rule.words.some((word) => sentence.includes(word)),
   );
-  const variant: BackgroundVariant = matched?.variant ?? getBackgroundFallback(style.id);
+  const variant: BackgroundVariant = matched?.variant ?? providers.asset.getBackgroundFallback(style.id);
   const tint = MOOD_TINT[mood];
 
   return {
@@ -353,14 +347,14 @@ function buildCharacters(
     rule.words.some((word) => sentence.includes(word)),
   );
 
-  const variant: CharacterVariant = matched?.variant ?? getCharacterDefault(style.id);
+  const variant: CharacterVariant = matched?.variant ?? providers.asset.getCharacterDefault(style.id);
 
   if (variant === "none") {
     return [];
   }
 
   const color = mood === "tense" ? "#000000" : style.palette.foreground;
-  const motion = pickCharacterMotion(variant, mood);
+  const motion = providers.asset.pickCharacterMotion(variant, mood);
 
   if (variant === "crowd") {
     // 群衆は複数体を散らして配置する
