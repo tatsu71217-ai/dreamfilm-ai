@@ -55,7 +55,11 @@ export type EffectKind =
   | "rain"
   | "bokeh"
   | "halftone"
-  | "speed-lines";
+  | "speed-lines"
+  | "snow"
+  | "fire"
+  | "cherry-blossom"
+  | "lightning";
 
 /**
  * シーンの情感。夢の感情解析結果から決まり、

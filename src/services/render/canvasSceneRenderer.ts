@@ -1,9 +1,15 @@
-import {
-  applyCameraTransform,
-  computeCameraTransform,
-  scaleForParallaxBackground,
-} from "@/services/render/cameraEngine";
+import { backgroundEngine } from "@/services/render/engine/backgroundEngine";
+import { characterEngine } from "@/services/render/engine/characterEngine";
+import { effectEngine } from "@/services/render/engine/effectEngine";
+import { RenderPipeline } from "@/services/render/engine/renderPipeline";
+import { subtitleEngine } from "@/services/render/engine/subtitleEngine";
 import type { DreamScene } from "@/types/scene";
+
+/**
+ * RenderEngine本体。Sceneを直接描画せず、各Engineをステージ順に組み合わせるだけの合成役。
+ * 新しい演出はEngineの追加、またはEffectEngineへの登録だけで拡張できる。
+ */
+const pipeline = new RenderPipeline([backgroundEngine, characterEngine, effectEngine, subtitleEngine]);
 
 /** 1シーンをCanvasへ描画する */
 export function drawScene(
@@ -14,38 +20,5 @@ export function drawScene(
   tSeconds: number,
 ): void {
   const duration = Math.max(0.001, scene.endTime - scene.startTime);
-  const progress = tSeconds / duration;
-  const cameraTransform = computeCameraTransform(scene.cameraMotion, progress, width, height);
-
-  // 背景レイヤー（視差のため前景より控えめに動かす）
-  ctx.save();
-  applyCameraTransform(ctx, scaleForParallaxBackground(cameraTransform), width, height);
-  const gradient = ctx.createLinearGradient(0, 0, 0, height);
-  gradient.addColorStop(0, scene.background.colorFrom);
-  gradient.addColorStop(1, scene.background.colorTo);
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, width, height);
-  ctx.restore();
-
-  // 前景レイヤー（キャラクター）
-  ctx.save();
-  applyCameraTransform(ctx, cameraTransform, width, height);
-
-  for (const character of scene.characters) {
-    ctx.fillStyle = character.color;
-    const cx = width * character.xRatio;
-    const r = height * character.scale * 0.5;
-    ctx.beginPath();
-    ctx.ellipse(cx, height * scene.background.horizonRatio, r * 0.5, r, 0, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  ctx.restore();
-
-  if (scene.subtitle && tSeconds >= 0) {
-    ctx.fillStyle = "#ffffff";
-    ctx.font = `${Math.round(height * 0.04)}px sans-serif`;
-    ctx.textAlign = "center";
-    ctx.fillText(scene.subtitle.text, width / 2, height * 0.9);
-  }
+  pipeline.render({ ctx, scene, width, height, tSeconds, progress: tSeconds / duration });
 }
