@@ -13,6 +13,7 @@ import type {
   CharacterAsset,
   EffectAsset,
 } from "@/types/asset";
+import type { StyleId } from "@/types/style";
 
 /** カットの速さの傾向 */
 export type ScenePacing = "fast" | "normal" | "slow";
@@ -89,6 +90,8 @@ export interface SubtitleTrack {
 /** レンダリング対象の1シーン */
 export interface DreamScene {
   sceneId: string;
+  /** このシーンが属するスタイル。WorldEngineが背景/カメラ/照明/色調/音を一括制御するために使う */
+  styleId: StyleId;
   /** 0始まりの並び順 */
   index: number;
   /** 動画先頭からの開始秒 */

@@ -20,7 +20,8 @@ export type StyleId =
   | "cute"
   | "beautiful"
   | "manga"
-  | "mascot";
+  | "mascot"
+  | "fantasy";
 
 /** 手続き描画に使う配色 */
 export interface StylePalette {
@@ -345,6 +346,42 @@ export const STYLE_PRESETS: Record<StyleId, StylePreset> = {
       noiseLevel: 0.01,
       reverb: 0.2,
       gain: 0.42,
+    },
+  },
+
+  fantasy: {
+    id: "fantasy",
+    label: "ファンタジー風",
+    description: "魔法的な光と紫がかった配色。神秘的な浮遊感。",
+    palette: {
+      backgroundFrom: "#2B1B4D",
+      backgroundTo: "#8A5FD1",
+      foreground: "#F0E6FF",
+      accent: "#FFD36E",
+    },
+    pacing: "normal",
+    cameraMotions: ["drift", "zoom-in", "parallax", "rotate"],
+    transitions: ["crossfade", "fade", "zoom-blur"],
+    effects: ["sparkle", "particles", "light-rays"],
+    subtitle: {
+      color: "#F0E6FF",
+      strokeColor: "#2B1B4D",
+      strokeWidth: 4,
+      fontWeight: 600,
+      fontSizeRatio: 0.042,
+      fontFamily: SERIF_FONT,
+      backdropOpacity: 0.15,
+      uppercase: false,
+    },
+    audio: {
+      rootFrequency: 392,
+      scaleSemitones: [0, 3, 7, 10, 14],
+      waveform: "triangle",
+      tempoBpm: 72,
+      drone: true,
+      noiseLevel: 0.02,
+      reverb: 0.6,
+      gain: 0.45,
     },
   },
 };

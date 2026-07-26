@@ -156,6 +156,7 @@ export function splitDreamIntoScenes(input: SplitScenesInput): SplitScenesResult
 
     scenes.push({
       sceneId: generateId(),
+      styleId: style.id,
       index,
       startTime,
       endTime,

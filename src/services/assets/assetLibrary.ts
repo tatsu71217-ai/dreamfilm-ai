@@ -24,6 +24,7 @@ const BACKGROUND_FALLBACK: Record<StyleId, BackgroundVariant> = {
   beautiful: "night-sky",
   manga: "city",
   mascot: "field",
+  fantasy: "night-sky",
 };
 
 /** 語彙が一致しない場合に使うキャラクター */
@@ -35,6 +36,7 @@ const CHARACTER_DEFAULT: Record<StyleId, CharacterVariant> = {
   beautiful: "none",
   manga: "figure",
   mascot: "mascot",
+  fantasy: "creature",
 };
 
 /** スタイルごとのSEプール */
@@ -46,6 +48,7 @@ const SOUND_EFFECT_POOL: Record<StyleId, SoundEffectVariant[]> = {
   beautiful: ["chime"],
   manga: ["impact", "whoosh"],
   mascot: ["pop", "chime"],
+  fantasy: ["chime", "whoosh"],
 };
 
 export function getBackgroundFallback(styleId: StyleId): BackgroundVariant {
