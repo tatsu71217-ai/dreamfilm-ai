@@ -40,12 +40,15 @@ const RUNTIME_CACHEABLE_ORIGINS = [
 /** 動的なAPI通信は絶対にキャッシュしない（Google Veo等、常に最新のレスポンスが必要なもの） */
 const NEVER_CACHE_HOSTNAMES = ["generativelanguage.googleapis.com"];
 
+// 初回インストール時は待機中のSWが無いため、ここでskipWaiting()を呼ばなくても即座に有効化される。
+// 逆に更新時は、利用者が「更新する」を押すまで待機させたい
+// （勝手に新しいSWへ切り替えると、生成中の動画などページ内の作業が失われるため）。
+// 切り替えの指示は下の message ハンドラで SKIP_WAITING を受け取ったときだけ行う。
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches
       .open(SHELL_CACHE)
       .then((cache) => cache.addAll(PRECACHE_URLS.concat(EXTRA_PRECACHE_URLS)))
-      .then(() => self.skipWaiting())
       .catch((error) => {
         console.error("[SW] アプリシェルの事前キャッシュに失敗しました。", error);
       }),
